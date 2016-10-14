@@ -1,0 +1,130 @@
+#!/bin/bash
+#
+# Run this to find the current version of dependencies packaged.
+#
+# Requires: PATH=$PATH:/home/corey/src/scripts/packaging
+#
+# Run: pkg-get-current-versions all
+#
+
+#set -ex
+
+clients=(python-aodhclient python-barbicanclient python-ceilometerclient python-cinderclient \
+         python-congressclient python-designateclient \
+         python-glanceclient python-gnocchiclient python-heatclient python-ironic-inspector-client \
+         python-ironicclient python-keystoneclient python-magnumclient \
+         python-manilaclient python-mistralclient python-monascaclient python-muranoclient python-neutronclient python-novaclient \
+         python-openstackclient python-saharaclient python-senlinclient python-swiftclient python-troveclient \
+         python-tackerclient python-tuskarclient python-zaqarclient)
+oslos=(python-oslo.cache python-oslo.concurrency python-oslo.config python-oslo.context python-oslo.db \
+       python-oslo.i18n python-oslo.log python-oslo.messaging python-oslo.middleware python-oslo.policy python-oslo.privsep \
+       python-oslo.reports python-oslo.rootwrap python-oslo.serialization python-oslo.service python-oslo.utils \
+       python-oslo.versionedobjects python-oslo.vmware python-oslosphinx python-oslotest)
+dashboards=(designate-dashboard ironic-ui manila-ui murano-dashboard sahara-dashboard senlin-dashboard trove-dashboard)
+other_os_deps=(openstack-doc-tools openstack-pkg-tools python-ceilometermiddleware python-cliff python-cffi python-glance-store \
+            python-ironic-lib python-keystoneauth1 python-keystonemiddleware python-neutron-lib python-openstacksdk python-os-api-ref \
+            python-os-brick python-os-client-config python-os-testr python-os-win python-os-vif python-osc-lib python-osprofiler \
+            python-pbr python-stevedore python-tempest python-tempest-lib \
+            networking-arista networking-brocade networking-cisco networking-hyperv networking-ibm networking-l2gw \
+            networking-midonet networking-mlnx networking-nec networking-odl networking-ovn networking-ovs-dpdk \
+            networking-plumgrid swift-plugin-s3)
+other_deps=(alabaster alembic appdirs astroid bandit contextlib2 dh-python dnspython dpdk enum34 gf-complete google-perftools \
+            gunicorn haproxy jerasure jinja2 kazoo keepalived kombu lazy-object-proxy liberasurecode libffi libseccomp liburcu \
+            libvirt logilab-common lua5.3 lxc migrate msgpack-python networking-odl nose openvswitch openvswitch-switch-dpdk paramiko \
+            pep8 psycopg2 pyasn1 pygments pyinotify pykerberos pylint pymongo pyopenssl pysendfile python-amqp python-antlr3 \
+            python-automaton python-babel python-bashate python-boto python-cachetools python-castellan python-concurrent.futures \
+            python-cryptography python-cryptography-vectors python-dateutil python-ddt python-debtcollector python-django \
+            python-django-appconf python-django-compressor python-django-openstack-auth python-django-pyscss python-doc8 \
+            python-dogpile.cache python-dogpile.core python-ecdsa python-eventlet python-fasteners python-fixtures python-flake8 \
+            python-funcsigs python-functools32 python-future python-futurist python-gabbi python-hacking python-httpretty \
+            python-hypothesis python-idna python-ipaddress python-jingo python-jsonpath-rw python-jsonpath-rw-ext python-jsonschema \
+            python-kajiki python-ldap3 python-ldappool python-linecache2 python-lxc python-memcache python-microversion-parse \
+            python-mock python-monotonic python-netaddr python-networkx python-oauth2client python-passlib python-pathlib \
+            python-pecan python-pint python-positional python-posix-ipc python-pretend python-pyasn1-modules python-pycadf \
+            python-pyeclib python-pykmip python-pylxd python-pymemcache python-pymysql python-pysaml2 python-pyscss python-redis \
+            python-rednose python-requestsexceptions python-requests-kerberos python-requests-mock python-requests-unixsocket \
+            python-restructuredtext-lint python-retrying python-rfc3986 python-rtslib-fb pyton-ryu python-semantic-version python-setuptools \
+            python-stringtemplate3 python-sure python-taskflow python-termstyle python-testtools python-tooz python-traceback2 \
+            python-tz python-unicodecsv python-urllib3 python-voluptuous python-webob python-wrapt python-wsgi-intercept python-wsme python-yaql \
+            python-zake q-text-as-data qemu rabbitmq-server requests routes sahara seabios six sphinx sphinx-rtd-theme \
+            sphinxcontrib-docbookrestapi sphinxcontrib-httpdomain sphinxcontrib-pecanwsme sphinxcontrib-programoutput sqlalchemy \
+            stevedore subunit swift tempest testrepository unittest2 ust vcversioner websockify wheel zzzeeksphinx)
+ubuntu_core=(aodh barbican ceilometer cinder designate glance heat horizon ironic keystone manila neutron neutron-fwaas neutron-lbaas \
+             neutron-vpnaas nova nova-lxd openstack-trove swift)
+debian_core=(congress gnocchi ironic-inspector magnum mistral murano murano-agent neutron-dynamic-routing sahara senlin watcher zaqar)
+
+#rmadison -u debian,ubuntu "${dependencies[@]}" | grep -E 'yakkety|unstable|experimental' | sort | \
+#    sed -e 's/^ *//' | \
+#    sed -e 's/  | yakkety                  | source, all/| yakkety           | source, all/' | \
+#    sed -e 's/  | yakkety                  | all/| yakkety           | all/' | \
+#    sed -e 's/  | yakkety-proposed         | source/| yakkety-proposed  | source/' | \
+#    sed -e 's/  | yakkety\/universe         | source, all/| yakkety\/universe  | source,all/'
+
+#rmadison -u debian,ubuntu "${clients[@]}" | grep -E 'yakkety' | sort
+#rmadison -u debian,ubuntu "${clients[@]}" | grep -E 'experimental' | sort
+#rmadison -u debian,ubuntu "${clients[@]}" | grep -E 'unstable' | sort
+#rmadison -u debian,ubuntu "${oslos[@]}" | grep -E 'yakkety' | sort
+#rmadison -u debian,ubuntu "${oslos[@]}" | grep -E 'experimental' | sort
+#rmadison -u debian,ubuntu "${oslos[@]}" | grep -E 'unstable' | sort
+#rmadison -u debian,ubuntu "${other_os_deps[@]}" | grep -E 'yakkety' | sort
+#rmadison -u debian,ubuntu "${other_os_deps[@]}" | grep -E 'experimental' | sort
+#rmadison -u debian,ubuntu "${other_os_deps[@]}" | grep -E 'unstable' | sort
+#rmadison -u debian,ubuntu "${core[@]}" | grep -E 'yakkety' | sort
+#rmadison -u debian,ubuntu "${core[@]}" | grep -E 'experimental' | sort
+#rmadison -u debian,ubuntu "${core[@]}" | grep -E 'unstable' | sort
+
+if [ $# -ne 1 ]
+then
+    echo "Usage: $0 package-set"
+    echo "       $0 all"
+    echo "       $0 clients"
+    echo "       $0 debian_core"
+    echo "       $0 dashboards"
+    echo "       $0 oslos"
+    echo "       $0 other_os_deps"
+    echo "       $0 other_deps"
+    echo "       $0 ubuntu_core"
+    exit
+fi
+
+package_set=$1
+
+if [ "$package_set" == "all" ]
+then
+    for pkg in "${clients[@]}"; do echo $pkg; rmadison -u debian,ubuntu $pkg | grep -E 'yakkety|experimental|unstable'; echo ""; done
+    for pkg in "${oslos[@]}"; do echo $pkg; rmadison -u debian,ubuntu $pkg | grep -E 'yakkety|experimental|unstable'; echo ""; done
+    for pkg in "${dashboards[@]}"; do echo $pkg; rmadison -u debian,ubuntu $pkg | grep -E 'yakkety|experimental|unstable'; echo ""; done
+    for pkg in "${other_os_deps[@]}"; do echo $pkg; rmadison -u debian,ubuntu $pkg | grep -E 'yakkety|experimental|unstable'; echo ""; done
+    for pkg in "${other_deps[@]}"; do echo $pkg; rmadison -u debian,ubuntu $pkg | grep -E 'yakkety|experimental|unstable'; echo ""; done
+    for pkg in "${ubuntu_core[@]}"; do echo $pkg; rmadison -u debian,ubuntu $pkg | grep -E 'yakkety|experimental|unstable'; echo ""; done
+    for pkg in "${debian_core[@]}"; do echo $pkg; rmadison -u debian,ubuntu $pkg | grep -E 'yakkety|experimental|unstable'; echo ""; done
+    #rmadison -u ubuntu ${clients[@]} | grep -E 'yakkety'
+    #rmadison -u ubuntu ${dashboards[@]} | grep -E 'yakkety'
+    #rmadison -u ubuntu ${other_os_deps[@]} | grep -E 'yakkety'
+    #rmadison -u ubuntu ${other_deps[@]} | grep -E 'yakkety'
+    #rmadison -u ubuntu ${ubuntu_core[@]} | grep -E 'yakkety'
+    #rmadison -u ubuntu ${debian_core[@]} | grep -E 'yakkety'
+elif [ "$package_set" == "clients" ]
+then
+    for pkg in "${clients[@]}"; do echo $pkg; rmadison -u debian,ubuntu $pkg | grep -E 'yakkety|experimental|unstable'; echo ""; done
+elif [ "$package_set" == "dashboards" ]
+then
+    for pkg in "${dashboards[@]}"; do echo $pkg; rmadison -u debian,ubuntu $pkg | grep -E 'yakkety|experimental|unstable'; echo ""; done
+elif [ "$package_set" == "debian_core" ]
+then
+    for pkg in "${debian_core[@]}"; do echo $pkg; rmadison -u debian,ubuntu $pkg | grep -E 'yakkety|experimental|unstable'; echo ""; done
+elif [ "$package_set" == "oslos" ]
+then
+    for pkg in "${oslos[@]}"; do echo $pkg; rmadison -u debian,ubuntu $pkg | grep -E 'yakkety|experimental|unstable'; echo ""; done
+elif [ "$package_set" == "other_os_deps" ]
+then
+    for pkg in "${other_os_deps[@]}"; do echo $pkg; rmadison -u debian,ubuntu $pkg | grep -E 'yakkety|experimental|unstable'; echo ""; done
+elif [ "$package_set" == "other_deps" ]
+then
+    for pkg in "${other_deps[@]}"; do echo $pkg; rmadison -u debian,ubuntu $pkg | grep -E 'yakkety|experimental|unstable'; echo ""; done
+elif [ "$package_set" == "ubuntu_core" ]
+then
+    for pkg in "${ubuntu_core[@]}"; do echo $pkg; rmadison -u debian,ubuntu $pkg | grep -E 'yakkety|experimental|unstable'; echo ""; done
+else
+    echo "That's not a package set --> $package_set"
+fi

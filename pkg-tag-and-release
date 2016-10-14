@@ -1,0 +1,78 @@
+#!/bin/bash
+#
+# Update release in d/changelog, commit it, tag release, and build/sign src/changes files.
+#
+# Requires: PATH=$PATH:/home/corey/src/scripts/packaging
+#
+# Run: pkg-tag-and-release cinder 9.0.0~b1 yakkety 0ubuntu1
+# Run: pkg-tag-and-release designate 1.0.2 trusty-liberty 0ubuntu1~cloud0
+#
+
+set -ex
+
+if [ $# -lt 4 ]
+then
+    echo "Usage: $0 package-name version ubuntu-release ubuntu-version"
+    echo "       $0 cinder 9.0.0~b1 yakkety 0ubuntu1"
+    echo "       $0 cinder 7.0.1 wily 0ubuntu1"
+    exit
+fi
+
+package=$1
+version=$2
+release=$3
+ubuntu_vers=$4
+
+epoch0_packages=(aodh swift)
+epoch1_packages=(barbican ceilometer designate heat ironic manila \
+                 neutron-fwaas openstack-trove sahara)
+if [ $release == "wily" ] || [ $release == "xenial" ]; then
+    epoch2_packages=(cinder glance horizon keystone neutron neutron-lbaas \
+                     neutron-vpnaas nova)
+    epoch3_packages=()
+else
+    epoch2_packages=(cinder glance keystone neutron neutron-lbaas \
+                     neutron-vpnaas nova)
+    epoch3_packages=(horizon)
+fi
+
+epoch=0
+for p in "${epoch1_packages[@]}"; do
+    [ "$p" == "$package" ] && epoch=1
+done
+for p in "${epoch2_packages[@]}"; do
+    [ "$p" == "$package" ] && epoch=2
+done
+for p in "${epoch3_packages[@]}"; do
+    [ "$p" == "$package" ] && epoch=3
+done
+
+set +e
+rm *.deb *.build *.changes; rm -rf .pc
+set -e
+
+orig_version=$version-$ubuntu_vers
+#sed -i "s/UNRELEASED/$release/g" debian/changelog
+sed -i "0,/UNRELEASED/ s/UNRELEASED/$release/" debian/changelog
+if [ $epoch -eq 0 ]; then
+    git commit -m "releasing package $package version $version-$ubuntu_vers" \
+        debian/changelog
+else
+    git commit -m "releasing package $package version $epoch:$version-$ubuntu_vers" \
+        debian/changelog
+fi
+
+[[ "$version" == *~* ]] && version=$(echo $version | sed -n 's/~/\./p')
+[[ "$ubuntu_vers" == *~* ]] && ubuntu_vers=$(echo $ubuntu_vers | sed -n 's/~/\-/p')
+version=$version-$ubuntu_vers
+
+git tag -s debian/$version -m "tagging package $package version debian/$version"
+git tag --list | grep debian/$version
+
+if [ "$package" == "horizon" ]; then
+    debuild -S -sa -us -uc
+    debsign -k 0DCDF806 ../${package}_${orig_version}_source.changes
+else
+    gbp buildpackage -S -sa -us -uc
+    debsign -k 0DCDF806 ../build-area/${package}_${orig_version}_source.changes
+fi

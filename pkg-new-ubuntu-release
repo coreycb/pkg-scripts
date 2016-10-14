@@ -1,0 +1,37 @@
+#!/bin/bash
+#
+# Clones the git package from launchpad.
+# Downloads and imports the orig upstream tarball.
+# Leaves you in d/changelog to edit.
+#
+# Requires: PATH=$PATH:/home/corey/src/scripts/packaging
+#
+# Run: pkg-new-ubuntu-release cinder 8.0.0~b2 master
+#
+
+set -ex
+
+if [ $# -ne 3 ]
+then
+    echo "Usage: $0 package-name ubuntu-version branch-name"
+    echo "       $0 cinder 8.0.0~b1 master"
+    echo "       $0 cinder 7.0.1 stable/liberty"
+    exit
+fi
+
+package=$1
+version=$2
+branch=$3
+
+git clone lp:~ubuntu-server-dev/ubuntu/+source/$package
+cd $package
+
+git checkout pristine-tar
+git checkout upstream
+git checkout $branch
+
+uscan --verbose --download-version ${version} --rename # --force-download
+gbp import-orig --no-interactive ../${package}_${version}.orig.tar.gz
+#gbp import-orig --no-interactive --merge-mode=replace ../${package}_${version}.orig.tar.gz
+
+dch -i
