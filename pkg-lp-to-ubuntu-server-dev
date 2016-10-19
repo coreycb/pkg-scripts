@@ -1,0 +1,69 @@
+#!/bin/bash
+#
+# Pulls package from Launchpad, creates git repo with master
+# pristine-tar, and upstream branches, and pushes it to
+# lp:~ubuntu-server-dev/ubuntu/+source/package-name.
+#
+# Requires: PATH=$PATH:/home/corey/src/scripts/packaging
+#
+# Run: pkg-lp-to-ubuntu-server-dev python-oslo.db
+#
+set -ex
+
+if [ $# -ne 1 ]
+then
+    echo "Usage: $0 package-name"
+    echo "       $0 python-oslo.db"
+    exit
+fi
+
+pkg=$1
+orig_dir=$(pwd)
+
+rm -rf ${pkg}*
+pull-lp-source ${pkg}
+mv ${pkg}-* ${pkg}
+cd ${pkg}
+
+quilt pop -a || true
+
+rm -rf ${orig_dir}/${pkg}/.pc
+rm -rf ${orig_dir}/${pkg}/.git*
+
+git init
+git add *
+git add */.*
+git commit -a -m "Initial import from Launchpad"
+
+git checkout --orphan upstream
+git rm --cached -r .
+find ${orig_dir}/${pkg}/ -maxdepth 1 ! -name '.git' ! -name "${pkg}" -exec rm -rf {} +
+git commit --allow-empty -a -m "Initial branch creation"
+
+git checkout --orphan pristine-tar
+git commit --allow-empty -a -m "Initial branch creation"
+
+git checkout master
+cat > debian/gbp.conf << EOF
+[DEFAULT]
+debian-branch = master
+upstream-tag = %(version)s
+pristine-tar = True
+
+[buildpackage]
+export-dir = ../build-area
+EOF
+git add debian/gbp.conf
+dch -i "d/gbp.conf: Update gbp configuration file."
+
+debcommit -a
+sed -i "s/Vcs-Browser: .*/Vcs-Browser: https:\/\/git\.launchpad\.net\/~ubuntu-server-dev\/ubuntu\/+source\/${pkg}/g" debian/control
+sed -i "s/Vcs-Git: .*/Vcs-Git: git:\/\/git\.launchpad\.net\/~ubuntu-server-dev\/ubuntu\/+source\/${pkg}/g" debian/control
+update-maintainer
+dch "d/control: Update Vcs-* links and maintainers."
+debcommit -a
+
+git push --all lp:~ubuntu-server-dev/ubuntu/+source/${pkg}
+git push --tags lp:~ubuntu-server-dev/ubuntu/+source/${pkg}
+
+echo "https://code.launchpad.net/~ubuntu-server-dev/ubuntu/+source/${pkg}/+git/${pkg}"

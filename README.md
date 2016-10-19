@@ -33,4 +33,9 @@ Sponsor package for direct upload to UCA
 5. gpagpt
 6. pkg-upload-to-uca nova 12.0.5 trusty-liberty 0ubuntu1~cloud0 2:12.0.4-0ubuntu1~cloud2
 
+Generate git repo for launchpad source package
+----------------------------------------------
+1. cd ~/pkg/ocata/pkg
+2. pkg-lp-to-ubuntu-server-dev python-oslo.db
+
 [1] alias gpagpt='git push --all && git push --tags'
