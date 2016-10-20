@@ -7,10 +7,10 @@ New snapshot version for CI
 New upstream (point) release
 ----------------------------
 1. cd ~/pkg/liberty/pkg
-2. pkg-new-ubuntu-release neutron 8.3.0 stable/mitaka
+2. pkg-new-ubuntu-release neutron 8.3.0 stable/mitaka -OR- pkg-new-ubuntu-release neutron 9.3.0 master
 3. merge any Ubuntu archive delta
 4. update d/control, etc
-5. pkg-tag-and-release neutron 8.3.0 xenial 0ubuntu1
+5. pkg-tag-and-release neutron 8.3.0 xenial 0ubuntu1 -OR- pkg-tag-and-release neutron 9.3.0 zesty 0ubuntu1
 6. gpagpt
 7. dput ../build-area/neutron_8.3.0-0ubuntu1_source.changes
 
