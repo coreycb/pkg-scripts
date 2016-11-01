@@ -1,10 +1,17 @@
 #!/bin/bash
 #
-# Run this to find the current version of dependencies packaged.
+# This script is horrible.  Run it to find the current version of dependencies packaged.
 #
 # Requires: PATH=$PATH:/home/corey/src/scripts/packaging
 #
 # Run: pkg-get-current-versions all
+#      pkg-get-current-versions clients
+#      pkg-get-current-versions oslos
+#      pkg-get-current-versions other_os_deps
+#      pkg-get-current-versions other_deps
+#      pkg-get-current-versions dashboards
+#      pkg-get-current-versions ubuntu_core
+#      pkg-get-current-versions debian_core
 #
 
 #set -ex
