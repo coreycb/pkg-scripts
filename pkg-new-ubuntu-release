@@ -31,7 +31,7 @@ git checkout upstream
 git checkout $branch
 
 uscan --verbose --download-version ${version} --rename # --force-download
-gbp import-orig --no-interactive ../${package}_${version}.orig.tar.gz
-#gbp import-orig --no-interactive --merge-mode=replace ../${package}_${version}.orig.tar.gz
+#gbp import-orig --no-interactive ../${package}_${version}.orig.tar.gz
+gbp import-orig --no-interactive --merge-mode=replace ../${package}_${version}.orig.tar.gz
 
 dch -i
