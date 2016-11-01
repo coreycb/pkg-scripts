@@ -91,13 +91,13 @@ package_set=$1
 
 if [ "$package_set" == "all" ]
 then
-    for pkg in "${clients[@]}"; do echo $pkg; rmadison -u debian,ubuntu $pkg | grep -E 'yakkety|experimental|unstable'; echo ""; done
-    for pkg in "${oslos[@]}"; do echo $pkg; rmadison -u debian,ubuntu $pkg | grep -E 'yakkety|experimental|unstable'; echo ""; done
-    for pkg in "${dashboards[@]}"; do echo $pkg; rmadison -u debian,ubuntu $pkg | grep -E 'yakkety|experimental|unstable'; echo ""; done
-    for pkg in "${other_os_deps[@]}"; do echo $pkg; rmadison -u debian,ubuntu $pkg | grep -E 'yakkety|experimental|unstable'; echo ""; done
-    for pkg in "${other_deps[@]}"; do echo $pkg; rmadison -u debian,ubuntu $pkg | grep -E 'yakkety|experimental|unstable'; echo ""; done
-    for pkg in "${ubuntu_core[@]}"; do echo $pkg; rmadison -u debian,ubuntu $pkg | grep -E 'yakkety|experimental|unstable'; echo ""; done
-    for pkg in "${debian_core[@]}"; do echo $pkg; rmadison -u debian,ubuntu $pkg | grep -E 'yakkety|experimental|unstable'; echo ""; done
+    for pkg in "${clients[@]}"; do echo $pkg; rmadison -u debian,ubuntu $pkg | grep -E 'yakkety|zesty|experimental|unstable'; echo ""; done
+    for pkg in "${oslos[@]}"; do echo $pkg; rmadison -u debian,ubuntu $pkg | grep -E 'yakkety|zesty|experimental|unstable'; echo ""; done
+    for pkg in "${dashboards[@]}"; do echo $pkg; rmadison -u debian,ubuntu $pkg | grep -E 'yakkety|zesty|experimental|unstable'; echo ""; done
+    for pkg in "${other_os_deps[@]}"; do echo $pkg; rmadison -u debian,ubuntu $pkg | grep -E 'yakkety|zesty|experimental|unstable'; echo ""; done
+    for pkg in "${other_deps[@]}"; do echo $pkg; rmadison -u debian,ubuntu $pkg | grep -E 'yakkety|zesty|experimental|unstable'; echo ""; done
+    for pkg in "${ubuntu_core[@]}"; do echo $pkg; rmadison -u debian,ubuntu $pkg | grep -E 'yakkety|zesty|experimental|unstable'; echo ""; done
+    for pkg in "${debian_core[@]}"; do echo $pkg; rmadison -u debian,ubuntu $pkg | grep -E 'yakkety|zesty|experimental|unstable'; echo ""; done
     #rmadison -u ubuntu ${clients[@]} | grep -E 'yakkety'
     #rmadison -u ubuntu ${dashboards[@]} | grep -E 'yakkety'
     #rmadison -u ubuntu ${other_os_deps[@]} | grep -E 'yakkety'
@@ -106,25 +106,25 @@ then
     #rmadison -u ubuntu ${debian_core[@]} | grep -E 'yakkety'
 elif [ "$package_set" == "clients" ]
 then
-    for pkg in "${clients[@]}"; do echo $pkg; rmadison -u debian,ubuntu $pkg | grep -E 'yakkety|experimental|unstable'; echo ""; done
+    for pkg in "${clients[@]}"; do echo $pkg; rmadison -u debian,ubuntu $pkg | grep -E 'yakkety|zesty|experimental|unstable'; echo ""; done
 elif [ "$package_set" == "dashboards" ]
 then
-    for pkg in "${dashboards[@]}"; do echo $pkg; rmadison -u debian,ubuntu $pkg | grep -E 'yakkety|experimental|unstable'; echo ""; done
+    for pkg in "${dashboards[@]}"; do echo $pkg; rmadison -u debian,ubuntu $pkg | grep -E 'yakkety|zesty|experimental|unstable'; echo ""; done
 elif [ "$package_set" == "debian_core" ]
 then
-    for pkg in "${debian_core[@]}"; do echo $pkg; rmadison -u debian,ubuntu $pkg | grep -E 'yakkety|experimental|unstable'; echo ""; done
+    for pkg in "${debian_core[@]}"; do echo $pkg; rmadison -u debian,ubuntu $pkg | grep -E 'yakkety|zesty|experimental|unstable'; echo ""; done
 elif [ "$package_set" == "oslos" ]
 then
-    for pkg in "${oslos[@]}"; do echo $pkg; rmadison -u debian,ubuntu $pkg | grep -E 'yakkety|experimental|unstable'; echo ""; done
+    for pkg in "${oslos[@]}"; do echo $pkg; rmadison -u debian,ubuntu $pkg | grep -E 'yakkety|zesty|experimental|unstable'; echo ""; done
 elif [ "$package_set" == "other_os_deps" ]
 then
-    for pkg in "${other_os_deps[@]}"; do echo $pkg; rmadison -u debian,ubuntu $pkg | grep -E 'yakkety|experimental|unstable'; echo ""; done
+    for pkg in "${other_os_deps[@]}"; do echo $pkg; rmadison -u debian,ubuntu $pkg | grep -E 'yakkety|zesty|experimental|unstable'; echo ""; done
 elif [ "$package_set" == "other_deps" ]
 then
-    for pkg in "${other_deps[@]}"; do echo $pkg; rmadison -u debian,ubuntu $pkg | grep -E 'yakkety|experimental|unstable'; echo ""; done
+    for pkg in "${other_deps[@]}"; do echo $pkg; rmadison -u debian,ubuntu $pkg | grep -E 'yakkety|zesty|experimental|unstable'; echo ""; done
 elif [ "$package_set" == "ubuntu_core" ]
 then
-    for pkg in "${ubuntu_core[@]}"; do echo $pkg; rmadison -u debian,ubuntu $pkg | grep -E 'yakkety|experimental|unstable'; echo ""; done
+    for pkg in "${ubuntu_core[@]}"; do echo $pkg; rmadison -u debian,ubuntu $pkg | grep -E 'yakkety|zesty|experimental|unstable'; echo ""; done
 else
     echo "That's not a package set --> $package_set"
 fi
