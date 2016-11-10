@@ -4,7 +4,7 @@
 #
 # Requires: PATH=$PATH:/home/corey/src/scripts/packaging
 #
-# Run: pkg-merge-debian python-congressclient debian/newton git://git.launchpad.net/~ddellav/ubuntu/+source/python-congressclient
+# Run: pkg-git-merge-debian python-congressclient debian/newton git://git.launchpad.net/~ddellav/ubuntu/+source/python-congressclient
 #
 
 set -ex

@@ -4,8 +4,8 @@
 #
 # Requires: PATH=$PATH:/home/corey/src/scripts/packaging
 #
-# Run: pkg-merge-ubuntu barbican git://git.launchpad.net/~ddellav/ubuntu/+source/barbican master
-# Run: pkg-merge-ubuntu barbican git://git.launchpad.net/~ddellav/ubuntu/+source/barbican stable/liberty
+# Run: pkg-git-merge-ubuntu barbican git://git.launchpad.net/~ddellav/ubuntu/+source/barbican master
+# Run: pkg-git-merge-ubuntu barbican git://git.launchpad.net/~ddellav/ubuntu/+source/barbican stable/liberty
 #
 
 set -ex
