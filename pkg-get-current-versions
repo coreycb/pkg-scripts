@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# This script is horrible.  Run it to find the current version of dependencies packaged.
+# Determine the current package versions of OpenStack dependencies.
 #
 # Requires: PATH=$PATH:/home/corey/src/scripts/packaging
 #
@@ -60,26 +60,6 @@ ubuntu_core=(aodh barbican ceilometer cinder designate glance heat horizon ironi
              neutron-vpnaas nova nova-lxd openstack-trove swift)
 debian_core=(congress gnocchi ironic-inspector magnum mistral murano murano-agent neutron-dynamic-routing sahara senlin watcher zaqar)
 
-#rmadison -u debian,ubuntu "${dependencies[@]}" | grep -E 'zesty|unstable|experimental' | sort | \
-#    sed -e 's/^ *//' | \
-#    sed -e 's/  | zesty                  | source, all/| zesty           | source, all/' | \
-#    sed -e 's/  | zesty                  | all/| zesty           | all/' | \
-#    sed -e 's/  | zesty-proposed         | source/| zesty-proposed  | source/' | \
-#    sed -e 's/  | zesty\/universe         | source, all/| zesty\/universe  | source,all/'
-
-#rmadison -u debian,ubuntu "${clients[@]}" | grep -E 'zesty' | sort
-#rmadison -u debian,ubuntu "${clients[@]}" | grep -E 'experimental' | sort
-#rmadison -u debian,ubuntu "${clients[@]}" | grep -E 'unstable' | sort
-#rmadison -u debian,ubuntu "${oslos[@]}" | grep -E 'zesty' | sort
-#rmadison -u debian,ubuntu "${oslos[@]}" | grep -E 'experimental' | sort
-#rmadison -u debian,ubuntu "${oslos[@]}" | grep -E 'unstable' | sort
-#rmadison -u debian,ubuntu "${other_os_deps[@]}" | grep -E 'zesty' | sort
-#rmadison -u debian,ubuntu "${other_os_deps[@]}" | grep -E 'experimental' | sort
-#rmadison -u debian,ubuntu "${other_os_deps[@]}" | grep -E 'unstable' | sort
-#rmadison -u debian,ubuntu "${core[@]}" | grep -E 'zesty' | sort
-#rmadison -u debian,ubuntu "${core[@]}" | grep -E 'experimental' | sort
-#rmadison -u debian,ubuntu "${core[@]}" | grep -E 'unstable' | sort
-
 if [ $# -ne 1 ]
 then
     echo "Usage: $0 package-set"
@@ -105,12 +85,6 @@ then
     for pkg in "${other_deps[@]}"; do echo $pkg; rmadison -u debian,ubuntu $pkg | grep -E 'xenial|zesty|experimental|unstable'; echo ""; done
     for pkg in "${ubuntu_core[@]}"; do echo $pkg; rmadison -u debian,ubuntu $pkg | grep -E 'xenial|zesty|experimental|unstable'; echo ""; done
     for pkg in "${debian_core[@]}"; do echo $pkg; rmadison -u debian,ubuntu $pkg | grep -E 'xenial|zesty|experimental|unstable'; echo ""; done
-    #rmadison -u ubuntu ${clients[@]} | grep -E 'xenial'
-    #rmadison -u ubuntu ${dashboards[@]} | grep -E 'xenial'
-    #rmadison -u ubuntu ${other_os_deps[@]} | grep -E 'xenial'
-    #rmadison -u ubuntu ${other_deps[@]} | grep -E 'xenial'
-    #rmadison -u ubuntu ${ubuntu_core[@]} | grep -E 'xenial'
-    #rmadison -u ubuntu ${debian_core[@]} | grep -E 'xenial'
 elif [ "$package_set" == "clients" ]
 then
     for pkg in "${clients[@]}"; do echo $pkg; rmadison -u debian,ubuntu $pkg | grep -E 'xenial|zesty|experimental|unstable'; echo ""; done
