@@ -19,7 +19,7 @@
 clients=(python-aodhclient python-barbicanclient python-ceilometerclient python-cinderclient \
          python-congressclient python-designateclient \
          python-glanceclient python-gnocchiclient python-heatclient python-ironic-inspector-client \
-         python-ironicclient python-keystoneclient python-magnumclient \
+         python-ironicclient python-k8sclient python-keystoneclient python-magnumclient \
          python-manilaclient python-mistralclient python-monascaclient python-muranoclient python-neutronclient python-novaclient \
          python-openstackclient python-saharaclient python-senlinclient python-swiftclient python-troveclient \
          python-tackerclient python-tuskarclient python-zaqarclient)
