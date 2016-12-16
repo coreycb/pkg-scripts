@@ -35,3 +35,4 @@ uscan --verbose --download-version ${version} --rename # --force-download
 gbp import-orig --no-interactive --merge-mode=replace ../${package}_${version}.orig.tar.gz
 
 dch -i
+sed -i "1s/1ubuntu1/0ubuntu1/" debian/changelog

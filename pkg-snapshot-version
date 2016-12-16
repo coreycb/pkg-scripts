@@ -66,3 +66,4 @@ else
 fi
 
 dch -i
+sed -i "1s/1ubuntu1/0ubuntu1/" debian/changelog
