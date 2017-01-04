@@ -43,7 +43,7 @@ git commit --allow-empty -a -m "Initial branch creation"
 git checkout --orphan pristine-tar
 git commit --allow-empty -a -m "Initial branch creation"
 
-git checkout master
+git checkout --force master
 cat > debian/gbp.conf << EOF
 [DEFAULT]
 debian-branch = master
