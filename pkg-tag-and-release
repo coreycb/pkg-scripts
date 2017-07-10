@@ -66,8 +66,10 @@ fi
 [[ "$ubuntu_vers" == *~* ]] && ubuntu_vers=$(echo $ubuntu_vers | sed -n 's/~/\-/p')
 version=$version-$ubuntu_vers
 
-git tag -s debian/$version -m "tagging package $package version debian/$version"
-git tag --list | grep debian/$version
+mod_version=$version
+[[ "$version" == *:* ]] && mod_version=$(echo $version | sed -n 's/:/%/p')
+git tag -s debian/$mod_version -m "tagging package $package version debian/$mod_version"
+git tag --list | grep debian/$mod_version
 
 if [ "$package" == "horizon" ]; then
     debuild -S -sa -us -uc
