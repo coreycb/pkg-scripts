@@ -71,10 +71,12 @@ mod_version=$version
 git tag -s debian/$mod_version -m "tagging package $package version debian/$mod_version"
 git tag --list | grep debian/$mod_version
 
+mod_version=$orig_version
+[[ "$orig_version" == *:* ]] && mod_version=$(echo $orig_version | sed -n 's/^.*://p')
 if [ "$package" == "horizon" ]; then
     debuild -S -sa -us -uc
-    debsign -k 0DCDF806 ../${package}_${orig_version}_source.changes
+    debsign -k 0DCDF806 ../${package}_${mod_version}_source.changes
 else
     gbp buildpackage -S -sa -us -uc
-    debsign -k 0DCDF806 ../build-area/${package}_${orig_version}_source.changes
+    debsign -k 0DCDF806 ../build-area/${package}_${mod_version}_source.changes
 fi
