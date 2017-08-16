@@ -23,30 +23,6 @@ version=$2
 release=$3
 ubuntu_vers=$4
 
-epoch0_packages=(aodh swift)
-epoch1_packages=(barbican ceilometer designate heat ironic manila \
-                 neutron-fwaas openstack-trove sahara)
-if [ $release == "wily" ] || [ $release == "xenial" ]; then
-    epoch2_packages=(cinder glance horizon keystone neutron neutron-lbaas \
-                     neutron-vpnaas nova)
-    epoch3_packages=()
-else
-    epoch2_packages=(cinder glance keystone neutron neutron-lbaas \
-                     neutron-vpnaas nova)
-    epoch3_packages=(horizon)
-fi
-
-epoch=0
-for p in "${epoch1_packages[@]}"; do
-    [ "$p" == "$package" ] && epoch=1
-done
-for p in "${epoch2_packages[@]}"; do
-    [ "$p" == "$package" ] && epoch=2
-done
-for p in "${epoch3_packages[@]}"; do
-    [ "$p" == "$package" ] && epoch=3
-done
-
 set +e
 rm *.deb *.build *.changes; rm -rf .pc
 set -e
@@ -54,13 +30,8 @@ set -e
 orig_version=$version-$ubuntu_vers
 #sed -i "s/UNRELEASED/$release/g" debian/changelog
 sed -i "0,/UNRELEASED/ s/UNRELEASED/$release/" debian/changelog
-if [ $epoch -eq 0 ]; then
-    git commit -m "releasing package $package version $version-$ubuntu_vers" \
-        debian/changelog
-else
-    git commit -m "releasing package $package version $epoch:$version-$ubuntu_vers" \
-        debian/changelog
-fi
+git commit -m "releasing package $package version $version-$ubuntu_vers" \
+    debian/changelog
 
 [[ "$version" == *~* ]] && version=$(echo $version | sed -n 's/~/\./p')
 [[ "$ubuntu_vers" == *~* ]] && ubuntu_vers=$(echo $ubuntu_vers | sed -n 's/~/\-/p')
