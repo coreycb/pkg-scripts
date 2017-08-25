@@ -38,7 +38,8 @@ git commit -m "releasing package $package version $version-$ubuntu_vers" \
 version=$version-$ubuntu_vers
 
 mod_version=$version
-[[ "$version" == *:* ]] && mod_version=$(echo $version | sed -n 's/:/%/p')
+[[ "$mod_version" == *:* ]] && mod_version=$(echo $mod_version | sed -n 's/:/%/p')
+[[ "$mod_version" == *~* ]] && mod_version=$(echo $mod_version | sed -n 's/~/_/p')
 git tag -s debian/$mod_version -m "tagging package $package version debian/$mod_version"
 git tag --list | grep debian/$mod_version
 
