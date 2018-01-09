@@ -4,7 +4,7 @@
 # (test-)requirements.txt. Must be run in the root directory
 # of the package.
 #
-# Run: pkg-update-deps bionic
+# Example: pkg-update-deps bionic
 #
 
 import argparse

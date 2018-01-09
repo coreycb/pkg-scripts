@@ -2,9 +2,7 @@
 #
 # Upload a package to the ubuntu cloud archive
 #
-# Requires: PATH=$PATH:/home/corey/src/scripts/packaging
-#
-# Run: pkg-upload-to-uca designate 1.0.2 trusty-liberty 0ubuntu1~cloud0 1:1.0.0-0ubuntu1~cloud0
+# Example: pkg-upload-to-uca designate 1.0.2 trusty-liberty 0ubuntu1~cloud0 1:1.0.0-0ubuntu1~cloud0
 #
 
 set -ex

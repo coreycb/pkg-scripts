@@ -1,12 +1,12 @@
 #!/bin/bash
 #
+# Update an Ubuntu package to a new upstream release.
+#
 # Clones the git package from launchpad.
 # Downloads and imports the orig upstream tarball.
 # Leaves you in d/changelog to edit.
 #
-# Requires: PATH=$PATH:/home/corey/src/scripts/packaging
-#
-# Run: pkg-new-ubuntu-release cinder 8.0.0~b2 master
+# Example: pkg-new-ubuntu-release cinder 8.0.0~b2 master
 #
 
 set -ex

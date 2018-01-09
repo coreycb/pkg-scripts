@@ -1,18 +1,18 @@
 #!/bin/bash
 #
+# Update an Ubuntu package to a new upstream snapshot.
+#
 # Clones git package from upstream into upstream directory.
 # Clones git package from launchpad into pkg directory.
 # Generates orig tarball from upstream branch and imports to package branch.
 # Leaves you in d/changelog to edit.
 #
-# Requires:
-#   1) PATH=$PATH:/home/corey/src/scripts/packaging
-#   2) The following needs to be in ~/.gbp.conf:
-#      [import-orig]
-#      postimport = dch -v%(version)s New upstream version.
+# Note: The following needs to be in ~/.gbp.conf:
+#       [import-orig]
+#       postimport = dch -v%(version)s New upstream version.
 #
-# Run: pkg-snapshot-version cinder master
-#      pkg-snapshot-version cinder stable/mitaka
+# Examples: pkg-snapshot-version cinder master
+#           pkg-snapshot-version cinder stable/mitaka
 #
 
 set -ex

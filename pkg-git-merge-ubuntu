@@ -2,10 +2,8 @@
 #
 # Merges a repo into a core package to sponsor a contribution.
 #
-# Requires: PATH=$PATH:/home/corey/src/scripts/packaging
-#
-# Run: pkg-git-merge-ubuntu barbican git://git.launchpad.net/~ddellav/ubuntu/+source/barbican master
-# Run: pkg-git-merge-ubuntu barbican git://git.launchpad.net/~ddellav/ubuntu/+source/barbican stable/liberty
+# Examples: pkg-git-merge-ubuntu barbican git://git.launchpad.net/~ddellav/ubuntu/+source/barbican master
+#           pkg-git-merge-ubuntu barbican git://git.launchpad.net/~ddellav/ubuntu/+source/barbican stable/liberty
 #
 
 set -ex

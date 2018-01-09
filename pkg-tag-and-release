@@ -1,11 +1,11 @@
 #!/bin/bash
 #
+# Release an Ubuntu package (but don't upload).
+#
 # Update release in d/changelog, commit it, tag release, and build/sign src/changes files.
 #
-# Requires: PATH=$PATH:/home/corey/src/scripts/packaging
-#
-# Run: pkg-tag-and-release cinder 9.0.0~b1 zesty 0ubuntu1
-# Run: pkg-tag-and-release designate 1.0.2 trusty-liberty 0ubuntu1~cloud0
+# Examples: pkg-tag-and-release cinder 9.0.0~b1 zesty 0ubuntu1
+#           pkg-tag-and-release designate 1.0.2 trusty-liberty 0ubuntu1~cloud0
 #
 
 set -ex

@@ -1,13 +1,13 @@
 #!/bin/bash
 #
+# Update an Ubuntu package to a new upstream release.
+#
 # Clones the git package from alioth.
 # Downloads and imports the new release's orig upstream tarball.
 # Leaves you in d/changelog to edit.
 # Also leaves you in d/gbp.conf if a new branch was created.
 #
-# Requires: PATH=$PATH:/home/corey/src/scripts/packaging
-#
-# Run: pkg-new-debian-release python-cinderclient 1.5.0 debian/newton
+# Example: pkg-new-debian-release python-cinderclient 1.5.0 debian/newton
 #
 
 set -ex

@@ -1,12 +1,10 @@
 #!/bin/bash
 #
-# Pulls package from Launchpad, creates git repo with master
-# pristine-tar, and upstream branches, and pushes it to
+# Pulls package from Launchpad, creates git repo with master, pristine-tar,
+# and upstream branches, and pushes it to:
 # lp:~ubuntu-server-dev/ubuntu/+source/package-name.
 #
-# Requires: PATH=$PATH:/home/corey/src/scripts/packaging
-#
-# Run: pkg-lp-to-ubuntu-server-dev python-oslo.db
+# Example: pkg-lp-to-ubuntu-server-dev python-oslo.db
 #
 set -ex
 
@@ -66,4 +64,4 @@ debcommit -a
 git push --all lp:~ubuntu-server-dev/ubuntu/+source/${pkg}
 git push --tags lp:~ubuntu-server-dev/ubuntu/+source/${pkg}
 
-echo "https://code.launchpad.net/~ubuntu-server-dev/ubuntu/+source/${pkg}/+git/${pkg}"
+echo "Pushed to: https://code.launchpad.net/~ubuntu-server-dev/ubuntu/+source/${pkg}/+git/${pkg}"

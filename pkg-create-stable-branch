@@ -2,7 +2,7 @@
 #
 # Create a stable branch for the specified package.
 #
-# Run: pkg-create-stable-branch cinder stable/pike
+# Example: pkg-create-stable-branch cinder stable/pike
 #
 
 set -ex
