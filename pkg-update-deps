@@ -294,7 +294,7 @@ def process_control_file_phase2():
 
                     fp_out.write("*** new {} deps (start)\n".format(req_f))
                     for line in sorted(new_dep_lines):
-                        fp_out.write(line)
+                        fp_out.write(line.rstrip() + ",\n")
                     fp_out.write("*** new {} deps (end) ***\n".format(req_f))
 
                 processing_new_deps = False
