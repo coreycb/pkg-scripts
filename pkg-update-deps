@@ -1,8 +1,8 @@
 #!/usr/bin/python3
 #
 # Updates debian/control (Build-)Depends(-Indep) based on
-# (test-)requirements.txt. Must be run in the root directory
-# of the package.
+# (test-)requirements.txt and doc/requirements.txt. Must be
+# run in the root directory of the package.
 #
 # Example: pkg-update-deps bionic
 #
@@ -17,7 +17,8 @@ import subprocess
 
 cpython2 = '/usr/share/dh-python/dist/cpython2_fallback'
 cpython3 = '/usr/share/dh-python/dist/cpython3_fallback'
-req_files = ['requirements.txt', 'test-requirements.txt']
+req_files = ['requirements.txt', 'test-requirements.txt',
+             os.path.join('doc', 'requirements.txt')]
 
 indent = None
 tmp_dir = tempfile.mkdtemp()
@@ -79,6 +80,9 @@ def find_package_line_in_req_file(req_file, pkg_name):
     Searches for a package in a requirements file. If the package is found,
     its line in the requirements file is returned. Otherwise None is returned.
     '''
+    if not os.path.isfile(req_file):
+        return None
+
     with open(req_file, 'r') as req_fp:
         for line in req_fp:
             pkg_name_req = line.split('(')[0].strip()
@@ -100,11 +104,12 @@ def swap_package_name_and_min_version(line, upstream_name, pkg_name):
 
 def process_requirements_files_phase1():
     '''
-    Process the (test-)requirements.txt files in the current directory by
-    stripping comments, replacing upstream package names with py2 and py3
-    Ubuntu package names, and retaining only the minimum required version.
-    The updated requirements files are written to the temp directory as
-    (test-)requirements.txt.phase1. Finally rmadison is called with the Ubuntu
+    Process the (test-)requirements.txt and doc/requirements.txt files in the
+    current directory by stripping comments, replacing upstream package names
+    with py2 and py3 Ubuntu package names, and retaining only the minimum
+    required version. The updated requirements files are written to the temp
+    directory as (test-)requirements.txt.phase1 and
+    doc/requirements.txt.phase1. Finally rmadison is called with the Ubuntu
     package list.
     '''
 
@@ -114,6 +119,11 @@ def process_requirements_files_phase1():
         if not os.path.isfile(req_file):
             log.warning("requirement file not found: {}".format(req_file))
             continue
+
+        if os.path.dirname(req_file) == 'doc':
+            doc_dir = os.path.join(tmp_dir, 'doc')
+            if not os.path.exists(doc_dir):
+                os.mkdir(doc_dir)
 
         with open(req_file, 'r') as fp_in, open(req_file_out, 'w') as fp_out:
             for line in fp_in:
@@ -147,11 +157,11 @@ def process_requirements_files_phase1():
 
 def process_requirements_files_phase2(release):
     '''
-    Process the (test-)requirements.txt.phase1 files in the temp directory
-    by adjusting the min version to include the Ubuntu package epoch if
-    the rmadison output has an epoch for the package. The updated
-    requirements files are written to the temp directory as
-    (test-)requirements.txt.phase2.
+    Process the (test-)requirements.txt.phase1 and doc/requirements.txt.phase1
+    files in the temp directory by adjusting the min version to include the
+    Ubuntu package epoch if the rmadison output has an epoch for the package.
+    The updated requirements files are written to the temp directory as
+    (test-)requirements.txt.phase2 and doc/requirements.txt.phase2.
     '''
     rmad_file = os.path.join(tmp_dir, "rmadison.txt")
 
@@ -189,10 +199,11 @@ def process_control_file_phase1():
     '''
     Process the debian/control file in the current directory by replacing
     min version for any existing dependencies with the min version from
-    (test-)requirements.txt.phase2. The updated control file is written to the
-    temp directory as control.phase1. This function also collects 2 lists of
-    packages, one for depends (from requirements.txt) and the other for
-    build-depends (from (test-)requirements.txt).
+    (test-)requirements.txt.phase2 or doc/requirements.txt.phase2. The
+    updated control file is written to the temp directory as
+    control.phase1. This function also collects 2 lists of packages, one
+    for depends (from requirements.txt) and the other for build-depends
+    (from (test-)requirements.txt and doc/requirements.txt).
     '''
     global indent
 
@@ -200,6 +211,7 @@ def process_control_file_phase1():
     control_file_out = os.path.join(tmp_dir, 'control.phase1')
     req_f = os.path.join(tmp_dir, '{}.phase2'.format('requirements.txt'))
     treq_f = os.path.join(tmp_dir, '{}.phase2'.format('test-requirements.txt'))
+    dreq_f = os.path.join(tmp_dir, 'doc', '{}.phase2'.format('requirements.txt'))
 
     with open(control_file, 'r') as fp_in:
         with open(control_file_out, 'w') as fp_out:
@@ -226,7 +238,8 @@ def process_control_file_phase1():
                 if control_line.startswith(" "):
                     # Must be a dependency - replace line in control file with
                     # package name and min version from
-                    # (test-)requirements.txt.phase2.
+                    # (test-)requirements.txt.phase2 or
+                    # doc/requirements.txt.phase2.
                     pkg_name = control_line.split(',')[0].split('(')[0].strip()
                     indent = control_line.split(pkg_name)[0]
 
@@ -235,6 +248,11 @@ def process_control_file_phase1():
                         if (section == 'Build-Depends' or
                                 section == 'Build-Depends-Indep'):
                             out_line = find_package_line_in_req_file(treq_f,
+                                                                     pkg_name)
+                    if not out_line:
+                        if (section == 'Build-Depends' or
+                                section == 'Build-Depends-Indep'):
+                            out_line = find_package_line_in_req_file(dreq_f,
                                                                      pkg_name)
                     if out_line:
                         fp_out.write(indent + out_line.rstrip() + ',\n')
@@ -255,9 +273,9 @@ def process_control_file_phase1():
 def process_control_file_phase2():
     '''
     Process the control.phase1 file in the temp directory by writing any new
-    dependencies from (test-)requirements.txt that don't already exist in
-    the control file. The updated control file is written to the temp
-    directory as control.phase2 and to debian/control.
+    dependencies from (test-)requirements.txt or doc/requirements.txt that
+    don't already exist in the control file. The updated control file is
+    written to the temp directory as control.phase2 and to debian/control.
     '''
     global indent
 
@@ -281,7 +299,10 @@ def process_control_file_phase2():
                 # Write the new deps
                 new_dep_lines = []
                 for req_f in req_files:
+
                     r_file = os.path.join(tmp_dir, '{}.phase2'.format(req_f))
+                    if not os.path.isfile(r_file):
+                        continue
 
                     with open(r_file, 'r') as fp_r:
                         for r_line in fp_r:
@@ -289,6 +310,8 @@ def process_control_file_phase2():
                             if ((req_f == 'requirements.txt' and
                                     pkg_name not in depends_packages) or
                                 (req_f == 'test-requirements.txt' and
+                                    pkg_name not in build_depends_packages) or
+                                (req_f == os.path.join('doc', 'requirements.txt') and
                                     pkg_name not in build_depends_packages)):
                                 new_dep_lines.append(indent + r_line)
 
@@ -306,8 +329,8 @@ def process_control_file_phase2():
 
 def main():
     '''
-    Process (test-)requirements.txt files and update debian/control
-    file with updated version requirements.
+    Process (test-)requirements.txt and doc/requirements.txt files and update
+    debian/control file with updated version requirements.
     '''
     parser = argparse.ArgumentParser()
     parser.add_argument("release", help="Ubuntu release code name")
