@@ -297,6 +297,7 @@ def process_control_file_phase2():
                         fp_out.write(line.rstrip() + ",\n")
                     fp_out.write("*** new {} deps (end) ***\n".format(req_f))
 
+                fp_out.write(control_line)
                 processing_new_deps = False
 
     # Finally copy the control.phase2 file to debian/control
