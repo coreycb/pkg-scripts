@@ -96,7 +96,19 @@ def swap_package_name_and_min_version(line, upstream_name, pkg_name):
         output_line = line.replace(upstream_name,
                                    "ENOTFOUND({})".format(upstream_name))
     else:
-        min_version = line.split('>=')[1].split(',')[0].rstrip()
+        try:
+            min_version = line.split('>=')[1].split(',')[0].rstrip()
+        except IndexError:
+            log.warning("Unable to find min version on line: {}".format(line))
+            try:
+                min_version = line.split('==')[1].split(',')[0].rstrip()
+            except IndexError:
+                log.critical("Unable to find pinned (==) version on line: "
+                             "{}".format(line))
+                raise
+            else:
+                log.warning("Using pinned (==) version {} as min version "
+                            "for package {}".format(min_version, pkg_name))
         output_line = "{} (>= {})".format(pkg_name, min_version)
         packages.append(pkg_name)
     return output_line
@@ -140,8 +152,8 @@ def process_requirements_files_phase1():
                 try:
                     upstream_name = line[0:indexes[0]]
                 except IndexError:
-                    log.error("Unable to find first operator in line: "
-                              "{}".format(line))
+                    log.critical("Unable to find first operator in line: "
+                                 "{}".format(line))
                     raise
 
                 pkg_name_py2 = get_ubuntu_package_name(upstream_name)
