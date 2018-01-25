@@ -92,6 +92,11 @@ def find_package_line_in_req_file(req_file, pkg_name):
 
 
 def swap_package_name_and_min_version(line, upstream_name, pkg_name):
+    '''
+    Given a line from a requirements file, replaces the upstream name with
+    the Ubuntu package name, and retains only the minimum required version.
+    Also keeps a list of Ubuntu package names for later use by rmadison.
+    '''
     if pkg_name == "ENOTFOUND":
         output_line = line.replace(upstream_name,
                                    "ENOTFOUND({})".format(upstream_name))
