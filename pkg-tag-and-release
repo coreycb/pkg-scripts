@@ -33,7 +33,7 @@ sed -i "0,/UNRELEASED/ s/UNRELEASED/$release/" debian/changelog
 git commit -m "releasing package $package version $version-$ubuntu_vers" \
     debian/changelog
 
-[[ "$version" == *~* ]] && version=$(echo $version | sed -n 's/~/\./p')
+[[ "$version" == *~* ]] && version=$(echo $version | sed -n 's/~/\_/p')
 [[ "$ubuntu_vers" == *~* ]] && ubuntu_vers=$(echo $ubuntu_vers | sed -n 's/~/\-/p')
 version=$version-$ubuntu_vers
 
