@@ -58,7 +58,7 @@ def get_ubuntu_package_name(upstream_name, py3=False):
         if py3:
             python_version = 'python3'
         log.warning("Could not find {} Ubuntu package name for upstream "
-                    "python package {}".format(python_version, upstream_name))
+                    "python package: |{}|".format(python_version, upstream_name))
 
     return pkg_name
 
@@ -91,7 +91,8 @@ def find_package_line_in_req_file(req_file, pkg_name):
     return None
 
 
-def swap_package_name_and_min_version(line, upstream_name, pkg_name):
+def swap_package_name_and_min_version(line, upstream_name, pkg_name,
+                                      has_min_version):
     '''
     Given a line from a requirements file, replaces the upstream name with
     the Ubuntu package name, and retains only the minimum required version.
@@ -100,7 +101,9 @@ def swap_package_name_and_min_version(line, upstream_name, pkg_name):
     if pkg_name == "ENOTFOUND":
         output_line = line.replace(upstream_name,
                                    "ENOTFOUND({})".format(upstream_name))
-    else:
+        return output_line
+
+    if has_min_version:
         try:
             min_version = line.split('>=')[1].split(',')[0].rstrip()
         except IndexError:
@@ -115,6 +118,9 @@ def swap_package_name_and_min_version(line, upstream_name, pkg_name):
                 log.warning("Using pinned (==) version {} as min version "
                             "for package {}".format(min_version, pkg_name))
         output_line = "{} (>= {})".format(pkg_name, min_version)
+        packages.append(pkg_name)
+    else:
+        output_line = "{}".format(pkg_name)
         packages.append(pkg_name)
     return output_line
 
@@ -156,17 +162,20 @@ def process_requirements_files_phase1():
                 indexes = [x for x in indexes if x >= 0]
                 try:
                     upstream_name = line[0:indexes[0]]
+                    has_min_version = True
                 except IndexError:
-                    log.critical("Unable to find first operator in line: "
-                                 "{}".format(line))
-                    raise
+                    log.warning("Version specifier not found in line: "
+                                "{}".format(line.rstrip()))
+                    upstream_name = line.split(' ')[0].rstrip()
+                    has_min_version = False
 
                 pkg_name_py2 = get_ubuntu_package_name(upstream_name)
                 pkg_name_py3 = get_ubuntu_package_name(upstream_name, py3=True)
                 for pkg_name in [pkg_name_py2, pkg_name_py3]:
                     out_line = swap_package_name_and_min_version(line,
                                                                  upstream_name,
-                                                                 pkg_name)
+                                                                 pkg_name,
+                                                                 has_min_version)
                     fp_out.write(out_line + '\n')
 
     rmadison(packages)
