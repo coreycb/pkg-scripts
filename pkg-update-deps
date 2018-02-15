@@ -101,7 +101,7 @@ def swap_package_name_and_min_version(line, upstream_name, pkg_name,
     if pkg_name == "ENOTFOUND":
         output_line = line.replace(upstream_name,
                                    "ENOTFOUND({})".format(upstream_name))
-        return output_line
+        return output_line.rstrip()
 
     if has_min_version:
         try:
