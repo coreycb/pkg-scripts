@@ -58,7 +58,7 @@ def get_ubuntu_package_name(upstream_name, py3=False):
         if py3:
             python_version = 'python3'
         log.warning("Could not find {} Ubuntu package name for upstream "
-                    "python package: |{}|".format(python_version, upstream_name))
+                    "python package: {}".format(python_version, upstream_name))
 
     return pkg_name
 
@@ -107,16 +107,18 @@ def swap_package_name_and_min_version(line, upstream_name, pkg_name,
         try:
             min_version = line.split('>=')[1].split(',')[0].rstrip()
         except IndexError:
-            log.warning("Unable to find min version on line: {}".format(line))
+            log.warning("Unable to find min version in line: {}. Will "
+                        "use pinned version as min version in control file."
+                        "".format(line.rstrip()))
             try:
                 min_version = line.split('==')[1].split(',')[0].rstrip()
             except IndexError:
-                log.critical("Unable to find pinned (==) version on line: "
-                             "{}".format(line))
-                raise
-            else:
-                log.warning("Using pinned (==) version {} as min version "
-                            "for package {}".format(min_version, pkg_name))
+                log.warning("Unable to find pinned version in line: {}. Will "
+                            "not specify version in control file."
+                            "".format(line.rstrip()))
+                output_line = "{}".format(pkg_name)
+                packages.append(pkg_name)
+                return output_line
         output_line = "{} (>= {})".format(pkg_name, min_version)
         packages.append(pkg_name)
     else:
