@@ -50,5 +50,5 @@ if [ "$package" == "horizon" ]; then
     debsign -k 3516D1A5BF0077E71414E19715B9B3EE0DCDF806 ../${package}_${mod_version}_source.changes
 else
     gbp buildpackage -S -sa -us -uc
-    debsign -k 0DCDF806 ../build-area/${package}_${mod_version}_source.changes
+    debsign -k 3516D1A5BF0077E71414E19715B9B3EE0DCDF806 ../build-area/${package}_${mod_version}_source.changes
 fi
