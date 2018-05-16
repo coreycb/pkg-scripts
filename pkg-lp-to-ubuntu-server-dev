@@ -56,7 +56,7 @@ dch -i "d/gbp.conf: Update gbp configuration file."
 
 debcommit -a
 sed -i "s/Vcs-Browser: .*/Vcs-Browser: https:\/\/git\.launchpad\.net\/~ubuntu-server-dev\/ubuntu\/+source\/${pkg}/g" debian/control
-sed -i "s/Vcs-Git: .*/Vcs-Git: git:\/\/git\.launchpad\.net\/~ubuntu-server-dev\/ubuntu\/+source\/${pkg}/g" debian/control
+sed -i "s/Vcs-Git: .*/Vcs-Git: https:\/\/git\.launchpad\.net\/~ubuntu-server-dev\/ubuntu\/+source\/${pkg}/g" debian/control
 update-maintainer
 dch "d/control: Update Vcs-* links and maintainers."
 debcommit -a
