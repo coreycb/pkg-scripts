@@ -4,24 +4,24 @@
 #
 # Update release in d/changelog, commit it, tag release, and build/sign src/changes files.
 #
-# Examples: pkg-tag-and-release cinder 9.0.0~b1 zesty 0ubuntu1
-#           pkg-tag-and-release designate 1.0.2 trusty-liberty 0ubuntu1~cloud0
+# Examples: pkg-tag-and-release cinder 9.0.0~b1 0ubuntu1 zesty
+#           pkg-tag-and-release designate 1.0.2 0ubuntu1~cloud0 trusty-liberty
 #
 
 set -ex
 
 if [ $# -lt 4 ]
 then
-    echo "Usage: $0 package-name version ubuntu-release ubuntu-version"
-    echo "       $0 cinder 9.0.0~b1 zesty 0ubuntu1"
-    echo "       $0 cinder 7.0.1 wily 0ubuntu1"
+    echo "Usage: $0 package-name version ubuntu-version ubuntu-release"
+    echo "       $0 cinder 9.0.0~b1 0ubuntu1 zesty"
+    echo "       $0 cinder 7.0.1 0ubuntu1 wily"
     exit
 fi
 
 package=$1
 version=$2
-release=$3
-ubuntu_vers=$4
+ubuntu_vers=$3
+release=$4
 
 set +e
 rm *.deb *.build *.changes; rm -rf .pc
