@@ -1,0 +1,24 @@
+#!/usr/bin/env python3
+#
+# Push stable branches for stable/rocky
+# (requires projects-push file with list of projects, one name per line)
+#
+# Example: pkg-push-stable-branches
+#
+
+import os
+import subprocess
+
+def main():
+    with open("projects-push", "r") as f:
+        for line in f.readlines():
+            project = line.rstrip()
+            print("Processing project: {}".format(project))
+            saved_path = os.getcwd()
+            os.chdir(project)
+            cmd = ['git', 'push', '--all']
+            subprocess.check_call(cmd)
+            os.chdir(saved_path)
+
+if __name__ == "__main__":
+    main()
