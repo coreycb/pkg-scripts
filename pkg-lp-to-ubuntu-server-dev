@@ -19,7 +19,7 @@ pkg=$1
 orig_dir=$(pwd)
 
 rm -rf ${pkg}*
-pull-lp-source ${pkg}
+pull-lp-source ${pkg} cosmic
 mv ${pkg}-* ${pkg}
 cd ${pkg}
 

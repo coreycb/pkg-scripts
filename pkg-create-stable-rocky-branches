@@ -1,0 +1,19 @@
+#!/usr/bin/env python3
+#
+# Create stable branches for stable/rocky
+# (requires projects file with list of projects, one name per line)
+#
+# Example: pkg-create-stable-branches
+#
+
+import subprocess
+
+def main():
+    with open("projects", "r") as f:
+        for line in f.readlines():
+            project = line.rstrip()
+            cmd = ['pkg-create-stable-branch', project, 'stable/rocky']
+            subprocess.check_call(cmd)
+
+if __name__ == "__main__":
+    main()
