@@ -18,6 +18,7 @@ import subprocess
 cpython2 = '/usr/share/dh-python/dist/cpython2_fallback'
 cpython3 = '/usr/share/dh-python/dist/cpython3_fallback'
 req_files = ['requirements.txt', 'test-requirements.txt',
+             'driver-requirements.txt', # ironic uses this
              os.path.join('doc', 'requirements.txt')]
 
 indent = None
