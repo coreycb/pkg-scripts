@@ -58,12 +58,10 @@ git checkout upstream
 git checkout $branch
 if [ "$package" = "openstack-trove" ]
 then
-    gbp import-orig --no-interactive --merge-mode=replace ~/tarballs/trove_*.orig.tar.gz
-    cp ~/tarballs/trove* ..
-else
-    gbp import-orig --no-interactive --merge-mode=replace ~/tarballs/${package}_*.orig.tar.gz
-    cp ~/tarballs/${package}* ..
+    package="trove"
 fi
+gbp import-orig --no-interactive --merge-mode=replace ~/tarballs/${package}_*.orig.tar.gz
+cp ~/tarballs/${package}* ..
 
 dch -i
 sed -i "1s/1ubuntu1/0ubuntu1/" debian/changelog
