@@ -1,8 +1,9 @@
 #!/bin/bash
 #
 # Update an Ubuntu package to a new upstream snapshot.
-# Rename the version based on specified version to sort *before*.
-# The date stamp and upstream tip git hash will be added to the version.
+# Rename the version with git naming convention based on specified
+# version to sort *before*. The date stamp and upstream tip git hash
+# will be added to the version.
 #
 # Clones git package from upstream into upstream directory.
 # Clones git package from launchpad into pkg directory.
@@ -13,8 +14,8 @@
 #       [import-orig]
 #       postimport = dch -v%(version)s New upstream version.
 #
-# Examples: pkg-snapshot-version cinder 8.0.0~b1 master
-#           pkg-snapshot-version cinder 8.0.0~b1 stable/mitaka
+# Examples: pkg-snapshot-version-git cinder 8.0.0~b1 master
+#           pkg-snapshot-version-git cinder 8.0.0~b1 stable/mitaka
 #
 
 set -ex
