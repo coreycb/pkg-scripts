@@ -61,7 +61,7 @@ git pull
 git checkout pristine-tar
 git checkout upstream
 git checkout $branch
-date=$(date +%Y%m%d)
+date=$(date +%Y%m%d%H)
 if [ "$package" = "openstack-trove" ]
 then
     package="trove"
