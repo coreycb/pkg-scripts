@@ -4,22 +4,23 @@
 # and upstream branches, and pushes it to:
 # lp:~ubuntu-server-dev/ubuntu/+source/package-name.
 #
-# Example: pkg-lp-to-ubuntu-server-dev python-oslo.db
+# Example: pkg-lp-to-ubuntu-server-dev python-oslo.db disco
 #
 set -ex
 
-if [ $# -ne 1 ]
+if [ $# -ne 2 ]
 then
-    echo "Usage: $0 package-name"
-    echo "       $0 python-oslo.db"
+    echo "Usage: $0 package-name ubuntu-release"
+    echo "       $0 python-oslo.db disco"
     exit
 fi
 
 pkg=$1
+ubuntu_release=$2
 orig_dir=$(pwd)
 
 rm -rf ${pkg}*
-pull-lp-source ${pkg} cosmic
+pull-lp-source ${pkg} ${ubuntu_release}
 mv ${pkg}-* ${pkg}
 cd ${pkg}
 
