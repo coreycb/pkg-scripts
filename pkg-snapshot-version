@@ -60,8 +60,8 @@ if [ "$package" = "openstack-trove" ]
 then
     package="trove"
 fi
-gbp import-orig --no-interactive --merge-mode=replace ~/tarballs/${package}_*.orig.tar.gz
-cp ~/tarballs/${package}* ..
+gbp import-orig --no-interactive --merge-mode=replace ~/tarballs/*${package}_*.orig.tar.gz
+cp ~/tarballs/*${package}* ..
 
 dch -i
 sed -i "1s/1ubuntu1/0ubuntu1/" debian/changelog

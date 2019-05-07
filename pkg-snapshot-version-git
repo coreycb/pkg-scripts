@@ -67,7 +67,7 @@ then
     package="trove"
 fi
 #rename snapshot tarball
-mv ~/tarballs/${package}_*.orig.tar.gz ~/tarballs/${package}_${version}~git${date}.${githash}.orig.tar.gz
+mv ~/tarballs/*${package}_*.orig.tar.gz ~/tarballs/${package}_${version}~git${date}.${githash}.orig.tar.gz
 gbp import-orig --no-interactive --merge-mode=replace ~/tarballs/${package}_*.orig.tar.gz
 cp ~/tarballs/${package}* ..
 
