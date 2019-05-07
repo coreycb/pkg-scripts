@@ -6,10 +6,15 @@
 # Example: pkg-create-stable-branches
 #
 
+import argparse
 import subprocess
 
 def main():
-    with open("projects", "r") as f:
+    parser = argparse.ArgumentParser()
+    parser.add_argument("projects", help="Path to projects file")
+    args = parser.parse_args()
+
+    with open(args.projects, "r") as f:
         for line in f.readlines():
             project = line.rstrip()
             cmd = ['pkg-create-stable-branch', project, 'stable/stein']
