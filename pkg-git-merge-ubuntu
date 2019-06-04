@@ -2,8 +2,8 @@
 #
 # Merges a repo into a core package to sponsor a contribution.
 #
-# Examples: pkg-git-merge-ubuntu barbican git://git.launchpad.net/~ddellav/ubuntu/+source/barbican master
-#           pkg-git-merge-ubuntu barbican git://git.launchpad.net/~ddellav/ubuntu/+source/barbican stable/liberty
+# Examples: pkg-git-merge-ubuntu barbican git://git.launchpad.net/~sahid-ferdjaoui/ubuntu/+source/barbican master
+#           pkg-git-merge-ubuntu barbican git://git.launchpad.net/~sahid-ferdjaoui/ubuntu/+source/barbican stable/liberty
 #
 
 set -ex
@@ -11,8 +11,8 @@ set -ex
 if [ $# -ne 3 ]
 then
     echo "Usage: $0 package-name sponsoree-repo branch"
-    echo "       $0 barbican git://git.launchpad.net/~ddellav/ubuntu/+source/barbican master"
-    echo "       $0 barbican git://git.launchpad.net/~ddellav/ubuntu/+source/barbican stable/liberty"
+    echo "       $0 barbican git://git.launchpad.net/~sahid-ferdjaoui/ubuntu/+source/barbican master"
+    echo "       $0 barbican git://git.launchpad.net/~sahid-ferdjaoui/ubuntu/+source/barbican stable/liberty"
     exit
 fi
 
