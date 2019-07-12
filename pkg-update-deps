@@ -15,7 +15,6 @@ import tempfile
 import subprocess
 
 
-cpython2 = '/usr/share/dh-python/dist/cpython2_fallback'
 cpython3 = '/usr/share/dh-python/dist/cpython3_fallback'
 req_files = ['requirements.txt', 'test-requirements.txt',
              'driver-requirements.txt', # ironic uses this
@@ -28,15 +27,13 @@ build_depends_packages = []
 depends_packages = []
 
 
-def get_ubuntu_package_name(upstream_name, py3=False):
+def get_ubuntu_package_name(upstream_name):
     '''
     Return Ubuntu package name based on upstream package name.
     If Ubuntu package name is not found, returns 'ENOTFOUND'.
     '''
     pkg_name = 'ENOTFOUND'
-    cpython_file = cpython2
-    if py3:
-        cpython_file = cpython3
+    cpython_file = cpython3
 
     try:
         with open(cpython_file, 'r') as cpython_fp:
@@ -55,9 +52,7 @@ def get_ubuntu_package_name(upstream_name, py3=False):
         raise
 
     if pkg_name == 'ENOTFOUND':
-        python_version = 'python2'
-        if py3:
-            python_version = 'python3'
+        python_version = 'python3'
         log.warning("Could not find {} Ubuntu package name for upstream "
                     "python package: {}".format(python_version, upstream_name))
 
@@ -132,7 +127,7 @@ def process_requirements_files_phase1():
     '''
     Process the (test-)requirements.txt and doc/requirements.txt files in the
     current directory by stripping comments, replacing upstream package names
-    with py2 and py3 Ubuntu package names, and retaining only the minimum
+    with py3 Ubuntu package names, and retaining only the minimum
     required version. The updated requirements files are written to the temp
     directory as (test-)requirements.txt.phase1 and
     doc/requirements.txt.phase1. Finally rmadison is called with the Ubuntu
@@ -172,9 +167,8 @@ def process_requirements_files_phase1():
                     upstream_name = line.split(' ')[0].rstrip()
                     has_min_version = False
 
-                pkg_name_py2 = get_ubuntu_package_name(upstream_name)
-                pkg_name_py3 = get_ubuntu_package_name(upstream_name, py3=True)
-                for pkg_name in [pkg_name_py2, pkg_name_py3]:
+                pkg_name_py3 = get_ubuntu_package_name(upstream_name)
+                for pkg_name in [pkg_name_py3]:
                     out_line = swap_package_name_and_min_version(line,
                                                                  upstream_name,
                                                                  pkg_name,
