@@ -41,10 +41,14 @@ rm -rf ~/tarballs
 cd upstream
 if [ "$package" = "openstack-trove" ]
 then
-    git clone https://github.com/openstack/trove || true
+    git clone https://opendev.org/openstack/trove || true
     cd trove
+elif [ "$package" = "networking-arista" ]
+then
+    git clone https://opendev.org/x/networking-arista || true
+    cd networking-arista
 else
-    git clone https://github.com/openstack/$package || true
+    git clone https://opendev.org/openstack/$package || true
     cd $package
 fi
 git checkout $branch
@@ -67,7 +71,12 @@ then
     package="trove"
 fi
 #rename snapshot tarball
-mv ~/tarballs/*${package}_*.orig.tar.gz ~/tarballs/${package}_${version}~git${date}.${githash}.orig.tar.gz
+if [ "$package" = "networking-arista" ]
+then
+    mv ~/tarballs/networking_arista*.orig.tar.gz ~/tarballs/${package}_${version}~git${date}.${githash}.orig.tar.gz
+else
+    mv ~/tarballs/*${package}_*.orig.tar.gz ~/tarballs/${package}_${version}~git${date}.${githash}.orig.tar.gz
+fi
 gbp import-orig --no-interactive --merge-mode=replace ~/tarballs/${package}_*.orig.tar.gz
 cp ~/tarballs/${package}* ..
 
