@@ -1,12 +1,13 @@
 #!/usr/bin/env python3
 #
-# Create stable branches for stable/stein
-# (requires projects file with list of projects, one name per line)
+# Push stable branches for stable/train
+# (requires projects-push file with list of projects, one name per line)
 #
-# Example: pkg-create-stable-stein-branches ~/src/scripts/packaging/projects
+# Example: pkg-push-stable-train-branches ~/src/scripts/packaging/projects
 #
 
 import argparse
+import os
 import subprocess
 
 def main():
@@ -17,8 +18,12 @@ def main():
     with open(args.projects, "r") as f:
         for line in f.readlines():
             project = line.rstrip()
-            cmd = ['pkg-create-stable-branch', project, 'stable/stein']
+            print("Processing project: {}".format(project))
+            saved_path = os.getcwd()
+            os.chdir(project)
+            cmd = ['git', 'push', '--all']
             subprocess.check_call(cmd)
+            os.chdir(saved_path)
 
 if __name__ == "__main__":
     main()
