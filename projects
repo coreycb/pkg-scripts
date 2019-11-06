@@ -28,6 +28,7 @@ networking-bagpipe
 networking-bgpvpn
 networking-hyperv
 networking-l2gw
+networking-mlnx
 networking-odl
 networking-ovn
 networking-sfc
@@ -35,8 +36,6 @@ neutron
 neutron-dynamic-routing
 neutron-fwaas
 neutron-fwaas-dashboard
-neutron-lbaas
-neutron-lbaas-dashboard
 neutron-taas
 neutron-vpnaas
 nova
@@ -58,7 +57,6 @@ python-ceilometermiddleware
 python-cinderclient
 python-cliff
 python-congressclient
-python-cotyledon
 python-cursive
 python-designateclient
 python-diskimage-builder
@@ -95,9 +93,11 @@ python-octaviaclient
 python-openstackclient
 python-openstackdocstheme
 python-openstacksdk
+python-os-api-ref
 python-os-brick
 python-os-client-config
 python-os-ken
+python-os-net-config
 python-os-resource-classes
 python-os-service-types
 python-os-testr
@@ -139,7 +139,9 @@ python-pysaml2
 python-qinlingclient
 python-saharaclient
 python-scciclient
+python-searchlightclient
 python-senlinclient
+python-shade
 python-swiftclient
 python-tackerclient
 python-taskflow
@@ -162,9 +164,9 @@ sahara-dashboard
 senlin
 stevedore
 swift
-tempest
 trove-dashboard
 vmware-nsx
 watcher
 zaqar
+zaqar-ui
 zvmcloudconnector
