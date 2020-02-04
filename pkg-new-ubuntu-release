@@ -30,8 +30,9 @@ git checkout pristine-tar
 git checkout upstream
 git checkout $branch
 
+set +e
 uscan --verbose --download-version ${version} --rename --timeout 60 # --force-download
-#gbp import-orig --no-interactive ../${package}_${version}.orig.tar.gz
+set -e
 gbp import-orig --no-interactive --merge-mode=replace ../${package}_${version}.orig.tar.gz
 
 dch -i
