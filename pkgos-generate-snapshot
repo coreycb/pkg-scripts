@@ -1,0 +1,14 @@
+#!/bin/bash
+
+set -e
+
+rm -f dist/*
+python3 setup.py sdist
+package=$(cd dist; ls -1 *.tar.gz)
+version=$(echo $package | sed -e "s/\.tar\.gz//" -e "s/.*-//g")
+deb_version=$(echo $version | sed -e "s/\.0a/~a/" -e "s/\.0b/~b/" -e "s/\.dev/~dev/")
+pkg_name=$(echo $package | sed -e 's/\(.*\)-.*/\1/')
+
+mkdir -p ~/tarballs
+mv dist/$package ~/tarballs/${pkg_name}_${deb_version}.orig.tar.gz
+echo "Snapshot placed under ~/tarballs/${pkg_name}_${deb_version}.orig.tar.gz"
