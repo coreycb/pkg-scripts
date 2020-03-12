@@ -33,7 +33,8 @@ git checkout $branch
 set +e
 uscan --verbose --download-version ${version} --rename --timeout 60 # --force-download
 set -e
-gbp import-orig --no-interactive --merge-mode=replace ../${package}_${version}.orig.tar.gz
+gbp import-orig --no-interactive --merge-mode=replace ../${package}_${version}.orig.tar.gz || \
+gbp import-orig --no-interactive --merge-mode=replace ../${package}_${version}.orig.tar.xz
 
 dch -i
 sed -i "1s/1ubuntu1/0ubuntu1/" debian/changelog
