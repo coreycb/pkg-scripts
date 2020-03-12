@@ -10,7 +10,7 @@
 
 set -ex
 
-if [ $# -lt 4 ]
+if [ $# -lt 1 ]
 then
     echo "Usage: $0 ubuntu-release"
     echo "       $0 zesty"
