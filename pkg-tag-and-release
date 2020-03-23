@@ -32,7 +32,7 @@ git commit -m "releasing package $package version $version" debian/changelog
 
 mod_version=$version
 [[ "$mod_version" == *:* ]] && mod_version=$(echo $mod_version | sed -n 's/:/%/p')
-[[ "$mod_version" == *~* ]] && mod_version=$(echo $mod_version | sed -n 's/~/_/p')
+[[ "$mod_version" == *~* ]] && mod_version=$(echo $mod_version | sed -n 's/~/_/gp')
 git tag -s debian/$mod_version -m "tagging package $package version debian/$version"
 git tag --list | grep debian/$mod_version
 
