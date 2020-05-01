@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 #
-# Push stable branches for stable/train
+# Push stable branches for stable/ussuri
 # (requires projects-push file with list of projects, one name per line)
 #
-# Example: pkg-push-stable-train-branches ~/src/scripts/packaging/projects
+# Example: pkg-push-stable-ussuri-branches ~/src/scripts/packaging/projects
 #
 
 import argparse
@@ -21,6 +21,8 @@ def main():
             print("Processing project: {}".format(project))
             saved_path = os.getcwd()
             os.chdir(project)
+            cmd = ['git', 'checkout', 'stable/ussuri']
+            subprocess.check_call(cmd)
             cmd = ['git', 'push', '--all']
             subprocess.check_call(cmd)
             os.chdir(saved_path)
