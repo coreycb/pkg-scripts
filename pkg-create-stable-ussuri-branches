@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 #
-# Create stable branches for stable/train
+# Create stable branches for stable/ussuri
 # (requires projects file with list of projects, one name per line)
 #
-# Example: pkg-create-stable-train-branches ~/src/scripts/packaging/projects
+# Example: pkg-create-stable-ussuri-branches ~/src/scripts/packaging/projects
 #
 
 import argparse
@@ -17,7 +17,7 @@ def main():
     with open(args.projects, "r") as f:
         for line in f.readlines():
             project = line.rstrip()
-            cmd = ['pkg-create-stable-branch', project, 'stable/train']
+            cmd = ['pkg-create-stable-branch', project, 'stable/ussuri']
             subprocess.check_call(cmd)
 
 if __name__ == "__main__":
