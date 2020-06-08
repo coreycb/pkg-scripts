@@ -18,7 +18,10 @@ def main():
         for line in f.readlines():
             project = line.rstrip()
             cmd = ['pkg-create-stable-branch', project, 'stable/ussuri']
-            subprocess.check_call(cmd)
+            try:
+                subprocess.check_call(cmd)
+            except subprocess.CalledProcessError:
+                continue
 
 if __name__ == "__main__":
     main()
