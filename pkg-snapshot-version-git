@@ -39,10 +39,10 @@ rm -rf ~/tarballs
 
 # clone upstream branch and generate snapshot tarball
 cd upstream
-if [ "$package" = "openstack-trove" ]
+if [ "$package" = "gnocchi" ]
 then
-    git clone https://opendev.org/openstack/trove || true
-    cd trove
+    git clone https://github.com/gnocchixyz/gnocchi.git || true
+    cd gnocchi
 elif [ "$package" = "networking-arista" ]
 then
     git clone https://opendev.org/x/networking-arista || true
@@ -51,9 +51,13 @@ elif [ "$package" = "networking-l2gw" ]
 then
     git clone https://opendev.org/x/networking-l2gw || true
     cd networking-l2gw
+elif [ "$package" = "openstack-trove" ]
+then
+    git clone https://opendev.org/openstack/trove || true
+    cd trove
 elif [ "$package" = "zvmcloudconnector" ]
 then
-    https://github.com/mfcloud/python-zvm-sdk || true
+    git clone https://github.com/mfcloud/python-zvm-sdk || true
     cd python-zvm-sdk
 else
     git clone https://opendev.org/openstack/$package || true
