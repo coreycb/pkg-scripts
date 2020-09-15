@@ -47,6 +47,10 @@ elif [ "$package" = "networking-arista" ]
 then
     git clone https://opendev.org/x/networking-arista || true
     cd networking-arista
+elif [ "$package" = "networking-l2gw" ]
+then
+    git clone https://opendev.org/x/networking-l2gw || true
+    cd networking-l2gw
 elif [ "$package" = "zvmcloudconnector" ]
 then
     https://github.com/mfcloud/python-zvm-sdk || true
