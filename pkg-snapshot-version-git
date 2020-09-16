@@ -59,6 +59,10 @@ elif [ "$package" = "zvmcloudconnector" ]
 then
     git clone https://github.com/mfcloud/python-zvm-sdk || true
     cd python-zvm-sdk
+elif [ "$package" = "neutron-taas" ]
+then
+    git clone https://opendev.org/x/tap-as-a-service.git || true
+    cd tap-as-a-service
 else
     git clone https://opendev.org/openstack/$package || true
     cd $package
@@ -86,6 +90,9 @@ fi
 if [ "$package" = "networking-arista" ]
 then
     mv ~/tarballs/networking_arista*.orig.tar.gz ~/tarballs/${package}_${version}~git${date}.${githash}.orig.tar.gz
+elif [ "$package" = "neutron-taas" ]
+then
+    mv ~/tarballs/tap-as-a-service*.orig.tar.gz ~/tarballs/${package}_${version}~git${date}.${githash}.orig.tar.gz
 else
     mv ~/tarballs/*${package}_*.orig.tar.gz ~/tarballs/${package}_${version}~git${date}.${githash}.orig.tar.gz
 fi
