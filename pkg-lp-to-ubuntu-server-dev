@@ -2,9 +2,9 @@
 #
 # Pulls package from Launchpad, creates git repo with master, pristine-tar,
 # and upstream branches, and pushes it to:
-# lp:~ubuntu-server-dev/ubuntu/+source/package-name.
+# lp:~ubuntu-openstack-dev/ubuntu/+source/package-name.
 #
-# Example: pkg-lp-to-ubuntu-server-dev python-oslo.db disco
+# Example: pkg-lp-to-ubuntu-openstack-dev python-oslo.db disco
 #
 set -ex
 
@@ -56,13 +56,13 @@ git add debian/gbp.conf
 dch -i "d/gbp.conf: Update gbp configuration file."
 
 debcommit -a
-sed -i "s/Vcs-Browser: .*/Vcs-Browser: https:\/\/git\.launchpad\.net\/~ubuntu-server-dev\/ubuntu\/+source\/${pkg}/g" debian/control
-sed -i "s/Vcs-Git: .*/Vcs-Git: https:\/\/git\.launchpad\.net\/~ubuntu-server-dev\/ubuntu\/+source\/${pkg}/g" debian/control
+sed -i "s/Vcs-Browser: .*/Vcs-Browser: https:\/\/git\.launchpad\.net\/~ubuntu-openstack-dev\/ubuntu\/+source\/${pkg}/g" debian/control
+sed -i "s/Vcs-Git: .*/Vcs-Git: https:\/\/git\.launchpad\.net\/~ubuntu-openstack-dev\/ubuntu\/+source\/${pkg}/g" debian/control
 update-maintainer
 dch "d/control: Update Vcs-* links and maintainers."
 debcommit -a
 
-git push --all lp:~ubuntu-server-dev/ubuntu/+source/${pkg}
-git push --tags lp:~ubuntu-server-dev/ubuntu/+source/${pkg}
+git push --all lp:~ubuntu-openstack-dev/ubuntu/+source/${pkg}
+git push --tags lp:~ubuntu-openstack-dev/ubuntu/+source/${pkg}
 
-echo "Pushed to: https://code.launchpad.net/~ubuntu-server-dev/ubuntu/+source/${pkg}/+git/${pkg}"
+echo "Pushed to: https://code.launchpad.net/~ubuntu-openstack-dev/ubuntu/+source/${pkg}/+git/${pkg}"

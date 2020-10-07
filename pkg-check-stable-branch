@@ -16,7 +16,7 @@ fi
 package_name=$1
 stable_branch=$2
 
-git clone --quiet lp:~ubuntu-server-dev/ubuntu/+source/${package_name} || true
+git clone --quiet lp:~ubuntu-openstack-dev/ubuntu/+source/${package_name} || true
 cd ${package_name}
 
 git show-ref --verify --quiet refs/remotes/origin/${stable_branch}

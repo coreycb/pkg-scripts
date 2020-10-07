@@ -50,7 +50,7 @@ cd ../..
 
 # clone package branch and import snapshot tarball
 cd pkg
-git clone lp:~ubuntu-server-dev/ubuntu/+source/$package || true
+git clone lp:~ubuntu-openstack-dev/ubuntu/+source/$package || true
 cd $package
 git pull
 git checkout pristine-tar
