@@ -1,0 +1,10 @@
+.tox
+*.pyc
+build/
+dist/
+.local
+.coverage
+.vscode/
+# Sphinx
+doc/build
+coverage.xml
