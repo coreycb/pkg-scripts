@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 #
-# Push stable branches for stable/ussuri
-# (requires projects-push file with list of projects, one name per line)
+# Push new stable branch to origin
+# (requires projects file with list of projects, one name per line)
 #
-# Example: pkg-push-stable-ussuri-branches ~/src/scripts/packaging/projects
+# Example: pkg-push-stable-branches ~/src/scripts/packaging/projects stable/victoria
 #
 
 import argparse
@@ -13,6 +13,7 @@ import subprocess
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("projects", help="Path to projects file")
+    parser.add_argument("branch", help="Stable branch name to push")
     args = parser.parse_args()
 
     with open(args.projects, "r") as f:
@@ -21,9 +22,9 @@ def main():
             print("Processing project: {}".format(project))
             saved_path = os.getcwd()
             os.chdir(project)
-            cmd = ['git', 'checkout', 'stable/ussuri']
+            cmd = ['git', 'checkout', args.branch]
             subprocess.check_call(cmd)
-            cmd = ['git', 'push', '--all']
+            cmd = ['git', 'push']
             subprocess.check_call(cmd)
             os.chdir(saved_path)
 
