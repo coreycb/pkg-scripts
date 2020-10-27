@@ -1,0 +1,28 @@
+#!/usr/bin/env python3
+#
+# Remove all code from lp:~ubuntu-server-dev projects and add README to
+# redirect to lp:~ubuntu-openstack-dev. This is done for several projects.
+# (requires projects file with list of projects, one name per line)
+#
+# Example: pkg-redirect-ubuntu-server-dev-projects ~/src/scripts/pkg-scripts/projects
+#
+
+import argparse
+import subprocess
+
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("projects", help="Path to projects file")
+    args = parser.parse_args()
+
+    with open(args.projects, "r") as f:
+        for line in f.readlines():
+            project = line.rstrip()
+            cmd = ['pkg-redirect-ubuntu-server-dev-project', project]
+            try:
+                subprocess.check_call(cmd)
+            except subprocess.CalledProcessError:
+                continue
+
+if __name__ == "__main__":
+    main()
