@@ -1,0 +1,43 @@
+#!/bin/bash
+#
+# Remove all code from lp:~ubuntu-server-dev project and add README to
+# redirect to lp:~ubuntu-openstack-dev.
+#
+# Example: pkg-redirect-ubuntu-server-dev-project cinder
+#
+
+set -ex
+
+if [ $# -ne 1 ]; then
+    echo "Usage: $0 package"
+    echo "       $0 cinder"
+    exit
+fi
+
+package=$1
+basepath=$(pwd)
+branches="master stable/liberty stable/mitaka stable/newton stable/ocata stable/pike stable/queens stable/rocky stable/stein stable/train stable/ussuri"
+
+cat > /tmp/README.md << EOF
+MOVED. This repository has moved to https://code.launchpad.net/~ubuntu-openstack-dev/ubuntu/+source/${package}/+git/${package}.
+EOF
+cat > /tmp/commit-message.txt << EOF
+Cleanup moved repository
+
+This repository has moved to https://code.launchpad.net/~ubuntu-openstack-dev/ubuntu/+source/${package}/+git/${package}.
+EOF
+
+git clone lp:~ubuntu-server-dev/ubuntu/+source/$package
+cd $package
+for branch in $branches; do
+  git checkout $branch
+  if [[ "$?" == "0" ]]; then
+      find . -maxdepth 1 ! -name '.git' ! -name '.' ! -name '..' -exec rm -rf {} +
+      cp /tmp/README.md .
+      git add README.md
+      git commit -a -F /tmp/commit-message.txt
+  fi
+done
+git checkout master
+git push --all
+cd $basepath
