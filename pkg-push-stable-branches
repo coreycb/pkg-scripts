@@ -24,7 +24,7 @@ def main():
             os.chdir(project)
             cmd = ['git', 'checkout', args.branch]
             subprocess.check_call(cmd)
-            cmd = ['git', 'push']
+            cmd = ['git', 'push', '--set-upstream', 'origin', args.branch]
             subprocess.check_call(cmd)
             os.chdir(saved_path)
 
