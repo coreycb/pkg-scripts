@@ -30,13 +30,16 @@ EOF
 git clone lp:~ubuntu-server-dev/ubuntu/+source/$package
 cd $package
 for branch in $branches; do
+  set +e
   git checkout $branch
   if [[ "$?" == "0" ]]; then
+      set -e
       find . -maxdepth 1 ! -name '.git' ! -name '.' ! -name '..' -exec rm -rf {} +
       cp /tmp/README.md .
       git add README.md
       git commit -a -F /tmp/commit-message.txt
   fi
+  set -e
 done
 git checkout master
 git push --all
