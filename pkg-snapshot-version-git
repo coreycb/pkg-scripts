@@ -14,23 +14,22 @@
 #       [import-orig]
 #       postimport = dch -v%(version)s New upstream version.
 #
-# Examples: pkg-snapshot-version-git cinder 8.0.0~b1 master
-#           pkg-snapshot-version-git cinder 8.0.0~b1 stable/mitaka
+# Examples: pkg-snapshot-version-git cinder 8.0.0
 #
 
 set -ex
 
 if [ $# -ne 3 ]
 then
-    echo "Usage: $0 package-name version branch-name"
-    echo "       $0 cinder 8.0.0~b1 master"
-    echo "       $0 cinder 8.0.0~b1 stable/mitaka"
+    echo "Usage: $0 package-name version"
+    echo "       $0 cinder 8.0.0~b1"
     exit
 fi
 
 package=$1
 version=$2
-branch=$3
+master_branch="master"
+latest_stable_branch="stable/victoria"
 
 rm -rf ~/tarballs
 [ -d upstream ] || mkdir upstream
@@ -67,8 +66,12 @@ else
     git clone https://opendev.org/openstack/$package || true
     cd $package
 fi
-git checkout $branch
+git checkout $master_branch
 git pull
+latest_master_tag=$(git describe --abbrev=0)
+git checkout $latest_stable_branch
+git pull
+latest_stable_tag=$(git describe --abbrev=0)
 pkgos-generate-snapshot
 githash=$(git rev-parse --short HEAD)
 cd ../..
@@ -80,7 +83,7 @@ cd $package
 git pull
 git checkout pristine-tar
 git checkout upstream
-git checkout $branch
+git checkout $master_branch
 date=$(date +%Y%m%d%H)
 if [ "$package" = "openstack-trove" ]
 then
@@ -101,3 +104,6 @@ cp ~/tarballs/${package}* ..
 
 dch -i
 sed -i "1s/1ubuntu1/0ubuntu1/" debian/changelog
+
+echo "The latest tag for $master_branch is: ${latest_master_tag}"
+echo "The latest tag for $latest_stable_branch is: ${latest_stable_tag}"
