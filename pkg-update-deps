@@ -13,6 +13,7 @@ import os
 import shutil
 import tempfile
 import subprocess
+import sys
 
 
 cpython3 = '/usr/share/dh-python/dist/cpython3_fallback'
@@ -365,6 +366,11 @@ def main():
     if args.debug:
         loglevel = log.DEBUG
     log.basicConfig(format='%(levelname)s: %(message)s', level=loglevel)
+
+    ubuntu_codenames = ['xenial', 'bionic', 'focal', 'groovy', 'hirsute']
+    if args.release not in ubuntu_codenames:
+        log.error("Ubuntu release code name is not valid: {}".format(args.release))
+        sys.exit(1)
 
     process_requirements_files_phase1()
     process_requirements_files_phase2(args.release)
