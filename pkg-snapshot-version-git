@@ -14,20 +14,72 @@
 #       [import-orig]
 #       postimport = dch -v%(version)s New upstream version.
 #
-# Examples: pkg-snapshot-version-git cinder 8.0.0
+# Examples: pkg-snapshot-version-git cinder
 #
 
 set -ex
 
-if [ $# -ne 3 ]
+if [ $# -ne 1 ]
 then
-    echo "Usage: $0 package-name version"
-    echo "       $0 cinder 8.0.0~b1"
+    echo "Usage: $0 package-name"
+    echo "       $0 cinder"
     exit
 fi
 
+function calculate_snapshot_version {
+    # Calculate the version for snapshot
+    #
+    # The following is a quick reference of expected versions based on actual
+    # upstream nova git tags. In this scenario, the previous stable release
+    # version is 17.x.y and the development release version is unknown until
+    # the 18.0.0.0b1 tag is available:
+    #
+    # upstream tag      expected snapshot version
+    # ------------      --------------------------
+    # 17.0.0            17.0.0+git<date>.<hash>-0ubuntu1
+    # 17.0.1            17.0.1+git<date>.<hash>-0ubuntu1
+    # 17.1.0            17.1.0+git<date>.<hash>-0ubuntu1
+    # 18.0.0.0b1        18.0.0~b1+git<date>.<hash>-0ubuntu1
+    # 18.0.0.0b2        18.0.0~b2+git<date>.<hash>-0ubuntu1
+    # 18.0.0.0rc1       18.0.0~rc1-0ubuntu1  # not a snapshot
+    #                   18.0.0~rc1+git<date>.<hash>-0ubuntu1
+    # 18.0.0            18.0.0-0ubuntu1      # not a snapshot
+    # 18.0.1            18.0.1-0ubuntu1      # not a snapshot
+    version_stable=$1
+    version_stable=${version_stable//./ }
+    major_s=$(echo $version_stable | awk '{print $1}')
+    minor_s=$(echo $version_stable | awk '{print $2}')
+    patch_s=$(echo $version_stable | awk '{print $3}')
+    extra_s=$(echo $version_stable | awk '{print $4}')
+    version_master=$2
+    version_master=${version_master//./ }
+    major_m=$(echo $version_master | awk '{print $1}')
+    minor_m=$(echo $version_master | awk '{print $2}')
+    patch_m=$(echo $version_master | awk '{print $3}')
+    extra_m=$(echo $version_master | awk '{print $4}')
+    version_package="0.0.0"
+
+    if [ "$major_m" -gt "$major_s" ]; then
+        # If the major version of master is greater than that of the latest
+        # stable branch, then generate the snapshot version based on the tag
+        # from master.
+        if [ -n "$extra_m" ]; then
+            # we're dealing with a beta or rc release
+            extra_m=${extra_m//0}
+            version_package="${major_m}.${minor_m}.${patch_m}~${extra_m}+"
+        else
+            version_package="${major_m}.${minor_m}.${patch_m}+"
+        fi
+    elif [ "$major_m" -eq "$major_s" ]; then
+        # If the major version of master and latest stable branch are the same,
+        # then generate the snapshot version based on the greater of the two.
+        # It's safe to assume the stable release version is greater or equal.
+        version_package="${major_s}.${minor_s}.${patch_s}+"
+    fi
+    echo $version_package
+}
+
 package=$1
-version=$2
 master_branch="master"
 latest_stable_branch="stable/victoria"
 
@@ -76,6 +128,8 @@ pkgos-generate-snapshot
 githash=$(git rev-parse --short HEAD)
 cd ../..
 
+version=$(calculate_snapshot_version ${latest_stable_tag} ${latest_master_tag})
+
 # clone package branch and import snapshot tarball
 cd pkg
 git clone lp:~ubuntu-openstack-dev/ubuntu/+source/$package || true
@@ -92,12 +146,12 @@ fi
 #rename snapshot tarball
 if [ "$package" = "networking-arista" ]
 then
-    mv ~/tarballs/networking_arista*.orig.tar.gz ~/tarballs/${package}_${version}~git${date}.${githash}.orig.tar.gz
+    mv ~/tarballs/networking_arista*.orig.tar.gz ~/tarballs/${package}_${version}git${date}.${githash}.orig.tar.gz
 elif [ "$package" = "neutron-taas" ]
 then
-    mv ~/tarballs/tap-as-a-service*.orig.tar.gz ~/tarballs/${package}_${version}~git${date}.${githash}.orig.tar.gz
+    mv ~/tarballs/tap-as-a-service*.orig.tar.gz ~/tarballs/${package}_${version}git${date}.${githash}.orig.tar.gz
 else
-    mv ~/tarballs/*${package}_*.orig.tar.gz ~/tarballs/${package}_${version}~git${date}.${githash}.orig.tar.gz
+    mv ~/tarballs/*${package}_*.orig.tar.gz ~/tarballs/${package}_${version}git${date}.${githash}.orig.tar.gz
 fi
 gbp import-orig --no-interactive --merge-mode=replace ~/tarballs/${package}_*.orig.tar.gz
 cp ~/tarballs/${package}* ..
