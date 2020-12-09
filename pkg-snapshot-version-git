@@ -110,7 +110,23 @@ git checkout master
 git pull
 
 # get the uppermost tag in descending order and calculate snapshot version
-tag=$(git tag --sort -v:refname | grep -E '^[[:digit:]]{1,3}\.')
+tags=$(git tag --sort -v:refname | grep -E '^[[:digit:]]{1,3}\.')
+tag=$(git tag --sort -v:refname | grep -E '^[[:digit:]]{1,3}\.' | head -n 1)
+period_count=$(echo -n "$tag" | tr -cd '.' | wc -c)
+if [ "$period_count" -eq "3" ]; then
+    # Deal with sorting of betas and rc's before final release. If the final
+    # release tag exists, use it instead.
+    # 15.0.0.0rc2
+    # 15.0.0.0rc1
+    # 15.0.0.0b1
+    # 15.0.0
+    tag_base=$(echo $tag | sed 's|\(.*\)\..*|\1|')
+    tmp_tag=$(git tag --sort -v:refname | grep -E '^[[:digit:]]{1,3}\.' | grep -x $tag_base)
+    if [ -n $tmp_tag ]; then
+        tag=$tmp_tag
+    fi
+fi
+echo "The uppermost tag is: ${tag}"
 pkgos-generate-snapshot
 githash=$(git rev-parse --short HEAD)
 cd ../..
@@ -145,5 +161,3 @@ cp ~/tarballs/${package}* ..
 
 dch -i
 sed -i "1s/1ubuntu1/0ubuntu1/" debian/changelog
-
-echo "The uppermost tag is: ${tag}"
