@@ -23,8 +23,7 @@ package=$1
 version=$2
 branch=$3
 
-git clone lp:~ubuntu-openstack-dev/ubuntu/+source/$package
-#git clone lp:~ubuntu-server-dev/ubuntu/+source/$package
+git clone lp:~ubuntu-openstack-dev/ubuntu/+source/$package || git clone lp:~ubuntu-server-dev/ubuntu/+source/$package
 cd $package
 
 git checkout pristine-tar
