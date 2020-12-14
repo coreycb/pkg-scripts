@@ -1,0 +1,103 @@
+#!/usr/bin/env python3
+#
+# Target bug at distribution (package) series with status and importance:
+#   ./pkg-target-bug 1821800 cloud-archive openvswitch ussuri --status Triaged --importance Critical --assignee https://api.launchpad.net/1.0/~corey.bryant
+#   ./pkg-target-bug 1821800 ubuntu openvswitch focal --status Triaged --importance Critical --assignee https://api.launchpad.net/1.0/~corey.bryant
+#   ./pkg-target-bug 1821800 cloud-archive gnocchi '' --status Invalid --importance Undecided --assignee https://api.launchpad.net/1.0/~corey.bryant
+#   ./pkg-target-bug 1821800 ubuntu gnocchi '' --status Invalid --importance Undecided --assignee https://api.launchpad.net/1.0/~corey.bryant
+#
+
+import argparse
+from launchpadlib.launchpad import Launchpad
+import logging
+
+log = logging.getLogger(__name__)
+
+
+def extract_task(task):
+    name = task.bug_target_name.lower()
+    project = None
+    distribution = None
+    series = None
+    if ' (' in name:
+        project, distribution = name.split(' (',1)
+        distribution = distribution.split(')')[0]
+    else:
+        project = name
+    if distribution and ' ' in distribution:
+        distribution, series = distribution.split(' ',1)
+    return project, distribution, series
+
+
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("bug", help="Launchpad bug number")
+    parser.add_argument("distribution", help="Distribution of project: ubuntu, cloud-archive")
+    parser.add_argument("package", help="Name of package to target bug at (ignored for cloud-archive)")
+    parser.add_argument("series", help="Distribution series to be added/modified; '' is default target")
+    parser.add_argument("--status", default='Triaged', help="Bug status to assign: New, Incomplete, Opinion, Invalid, Won't Fix, Confirmed, Triaged, In Progress, Fix Committed, Fix Released")
+    parser.add_argument("--importance", help="Bug importance to assign: Undecided, Critical, High, Medium, Low, Wishlist")
+    parser.add_argument("--assignee", help="Bug owner: Launchpad ID")
+    args = parser.parse_args()
+
+    launchpad = Launchpad.login_with('hello-world', 'production')
+    bug = launchpad.bugs[args.bug]
+
+    distribution = launchpad.distributions[args.distribution]
+    try:
+        bug.addTask(target=distribution)
+    except:
+        log.warning("Task already added for distribution={}".format(
+            args.distribution))
+        pass
+    if distribution.name == 'ubuntu':
+        package = distribution.getSourcePackage(name=args.package)
+        try:
+            bug.addTask(target=package)
+        except:
+            log.warning("Task already added for package={}".format(args.package))
+            pass
+
+    try:
+        if distribution.name == 'ubuntu':
+            series = distribution.getSeries(name_or_version=args.series)
+        elif distribution.name == 'cloud-archive':
+            series = distribution.getSeries(name=args.series.lower())
+        nomination = bug.addNomination(target=series)
+        nomination.approve()
+    except:
+        log.warning("Task already targeted to series={}".format(
+            args.series.lower()))
+        pass
+
+    for task in bug.bug_tasks:
+        update = False
+        series = args.series.lower()
+        project, target, targeted_to = extract_task(task)
+        if distribution.name == 'cloud-archive':
+            if series:
+                if 'cloud-archive' in project and series in project:
+                    update = True
+            else:
+                if 'cloud-archive' == project:
+                    update = True
+        elif distribution.name == 'ubuntu':
+            if series:
+                if targeted_to == series and project == args.package:
+                    update = True
+            else:
+                if not targeted_to and project == args.package:
+                    update = True
+
+        if update:
+            if args.status:
+                task.status = args.status
+            if args.importance:
+                task.importance = args.importance
+            if args.assignee:
+                task.assignee_link = args.assignee
+            task.lp_save()
+            log.warning("Bug updated successfully!")
+
+if __name__ == "__main__":
+    main()
