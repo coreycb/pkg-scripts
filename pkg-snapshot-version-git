@@ -110,8 +110,13 @@ git checkout master
 git pull
 
 # get the uppermost tag in descending order and calculate snapshot version
-tags=$(git tag --sort -v:refname | grep -E '^[[:digit:]]{1,3}\.')
-tag=$(git tag --sort -v:refname | grep -E '^[[:digit:]]{1,3}\.' | head -n 1)
+max_digits=3
+if [ "$package" = "networking-arista" ]
+then
+  max_digits=4
+fi
+tags=$(git tag --sort -v:refname | grep -E "^[[:digit:]]{1,$max_digits}\.")
+tag=$(git tag --sort -v:refname | grep -E "^[[:digit:]]{1,$max_digits}\." | head -n 1)
 period_count=$(echo -n "$tag" | tr -cd '.' | wc -c)
 if [ "$period_count" -eq "3" ]; then
     # Deal with sorting of betas and rc's before final release. If the final
@@ -121,7 +126,7 @@ if [ "$period_count" -eq "3" ]; then
     # 15.0.0.0b1
     # 15.0.0
     tag_base=$(echo $tag | sed 's|\(.*\)\..*|\1|')
-    tmp_tag=$(git tag --sort -v:refname | grep -E '^[[:digit:]]{1,3}\.' | grep -x $tag_base)
+    tmp_tag=$(git tag --sort -v:refname | grep -E "^[[:digit:]]{1,$max_digits}\." | grep -x $tag_base)
     if [ -n $tmp_tag ]; then
         tag=$tmp_tag
     fi
