@@ -20,19 +20,20 @@
 #       [import-orig]
 #       postimport = dch -v%(version)s New upstream snapshot for OpenStack Wallaby.
 #
-# Examples: pkg-snapshot-version-git cinder
+# Examples: pkg-snapshot-version-git cinder master
 #
 
 set -ex
 
-if [ $# -ne 1 ]
+if [ $# -ne 2 ]
 then
-    echo "Usage: $0 package-name"
-    echo "       $0 cinder"
+    echo "Usage: $0 package-name branch-name"
+    echo "       $0 cinder master"
     exit
 fi
 
 package=$1
+branch=$2
 
 function calculate_snapshot_version {
     # Calculate the version for snapshot
@@ -106,7 +107,7 @@ else
     cd $package
 fi
 
-git checkout master
+git checkout $branch
 git pull
 
 # get the uppermost tag in descending order and calculate snapshot version
@@ -146,7 +147,7 @@ cd $package
 git pull
 git checkout pristine-tar
 git checkout upstream
-git checkout master
+git checkout $branch
 date=$(date +%Y%m%d%H)
 if [ "$package" = "openstack-trove" ]
 then
