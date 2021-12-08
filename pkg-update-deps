@@ -367,7 +367,7 @@ def main():
         loglevel = log.DEBUG
     log.basicConfig(format='%(levelname)s: %(message)s', level=loglevel)
 
-    ubuntu_codenames = ['xenial', 'bionic', 'focal', 'groovy', 'hirsute']
+    ubuntu_codenames = ['xenial', 'bionic', 'focal', 'hirsute', 'impish', 'jammy']
     if args.release not in ubuntu_codenames:
         log.error("Ubuntu release code name is not valid: {}".format(args.release))
         sys.exit(1)
