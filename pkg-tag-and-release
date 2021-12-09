@@ -38,10 +38,5 @@ git tag --list | grep debian/$mod_version
 
 mod_version=$version
 [[ "$version" == *:* ]] && mod_version=$(echo $version | sed -n 's/^.*://p')
-if [ "$package" == "horizon" ] || [ "$package" == "heat-dashboard" ]; then
-    debuild -S -sa -us -uc
-    debsign -k 3516D1A5BF0077E71414E19715B9B3EE0DCDF806 ../${package}_${mod_version}_source.changes
-else
-    gbp buildpackage -S -sa -us -uc
-    debsign -k 3516D1A5BF0077E71414E19715B9B3EE0DCDF806 ../build-area/${package}_${mod_version}_source.changes
-fi
+gbp buildpackage -S -sa -us -uc
+debsign -k 3516D1A5BF0077E71414E19715B9B3EE0DCDF806 ../build-area/${package}_${mod_version}_source.changes
