@@ -1,0 +1,170 @@
+#!/usr/bin/env python3
+#
+# Creates an OpenStack stable point release bug.
+#
+# Example: pkg-open-sru-bug zed kinetic manila=15.1.0 nova=26.0.1
+#
+
+import argparse
+import lpl_common
+
+UBUNTU_RELEASES = [
+    'focal',
+    'jammy',
+    'kinetic',
+    'lunar',
+]
+
+OPENSTACK_RELEASES = [
+    'ussuri',
+    'victoria',
+    'wallaby',
+    'xena',
+    'yoga',
+    'zed',
+    'antelope',
+]
+
+LONG_DESC = """
+[Impact]
+This release sports mostly bug-fixes and we would like to make
+sure all of our supported customers have access to these
+improvements. The update contains the following package updates:
+
+{}
+
+[Test Case]
+The following SRU process was followed:
+https://wiki.ubuntu.com/OpenStackUpdates
+
+In order to avoid regression of existing consumers, the OpenStack team
+will run their continuous integration test against the packages that
+are in -proposed. A successful run of all available tests will be
+required before the proposed packages can be let into -updates.
+
+The OpenStack team will be in charge of attaching the output summary
+of the executed tests. The OpenStack team members will not mark
+‘verification-done’ until this has happened.
+
+[Regression Potential]
+In order to mitigate the regression potential, the results of the
+aforementioned tests are attached to this bug.
+
+[Discussion]
+n/a
+"""
+
+
+def check_args_syntax(args, parser):
+    syntax_error = False
+    if '=' not in "".join(args.package_version):
+        syntax_error = True
+    if args.ubuntu_release not in UBUNTU_RELEASES:
+        syntax_error = True
+    if args.openstack_release not in OPENSTACK_RELEASES:
+        syntax_error = True
+
+    if syntax_error:
+        parser.print_help()
+        sys.exit(1)
+
+def package_versions_list_to_dict(pkg_versions):
+    pkg_vers_dict = {r.split('=')[0]: r.split('=')[1] for r in pkg_versions}
+    return pkg_vers_dict
+
+def package_versions_dict_to_string(pkg_versions):
+    pkg_vers_str = '\n    '.join(f"{p} {v}" for p, v in pkg_versions.items())
+    return pkg_vers_str
+
+def short_desc(openstack_release):
+    return f"[SRU] {openstack_release} stable releases"
+
+def long_desc(pkg_versions):
+    return LONG_DESC.format(package_versions_dict_to_string(pkg_versions))
+
+def extract_task(task):
+    name = task.bug_target_name.lower()
+    project = None
+    distribution = None
+    series = None
+    if ' (' in name:
+        project, distribution = name.split(' (',1)
+        distribution = distribution.split(')')[0]
+    else:
+        project = name
+    if distribution and ' ' in distribution:
+        distribution, series = distribution.split(' ',1)
+    return project, distribution, series
+
+def open_bug(short_desc, long_desc, ubuntu_release,
+             openstack_release, pkg_versions):
+    lp = lpl_common.connect()
+    cloud_archive = lp.distributions['cloud-archive']
+    ubuntu = lp.distributions['ubuntu']
+    packages = [ubuntu.getSourcePackage(name=p) for p, _ in pkg_versions.items()]
+
+    bug = lp.bugs.createBug(description=long_desc, title=short_desc, target=cloud_archive)
+
+    series = cloud_archive.getSeries(name=openstack_release)
+    nomination = bug.addNomination(target=series)
+    nomination.approve()
+
+    series = ubuntu.getSeries(name_or_version=ubuntu_release)
+    for pkg in packages:
+        bug.addTask(target=pkg)
+        nomination = bug.addNomination(target=series)
+        nomination.approve()
+
+    for task in bug.bug_tasks:
+        project, target, targeted_to = extract_task(task)
+        if 'cloud-archive' in project and openstack_release in project:
+            task.status = 'Triaged'
+            task.importance = 'High'
+        elif targeted_to == ubuntu_release:
+            task.status = 'Triaged'
+            task.importance = 'High'
+        else:
+            task.status = 'Invalid'
+        lpl_common.save(task)
+
+    print(f"SRU bug opened: {bug.web_link}")
+
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        'openstack_release',
+        type=str,
+        help='openstack release such as: ussuri'
+    )
+    parser.add_argument(
+        'ubuntu_release',
+        type=str,
+        help='ubuntu release such as: jammy'
+    )
+    parser.add_argument(
+        'package_version',
+        nargs='+',
+        type=str,
+        help='package versions such as: neutron=16.4.2 nova=21.2.4'
+    )
+    parser.add_argument(
+        '-d',
+        '--debug',
+        help='enable verbose logging',
+        action='store_true')
+    args = parser.parse_args()
+
+    check_args_syntax(args, parser)
+
+    pkg_versions = package_versions_list_to_dict(args.package_version)
+
+    open_bug(
+        short_desc(args.openstack_release),
+        long_desc(pkg_versions),
+        args.ubuntu_release,
+        args.openstack_release,
+        pkg_versions
+    )
+
+if __name__ == "__main__":
+    main()
