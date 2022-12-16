@@ -16,13 +16,30 @@ import subprocess
 import sys
 
 
-cpython3 = '/usr/share/dh-python/dist/cpython3_fallback'
-req_files = ['requirements.txt', 'test-requirements.txt',
-             'driver-requirements.txt', # ironic uses this
-             os.path.join('doc', 'requirements.txt')]
+IGNORE_PROJECTS = [
+  'bandit',
+  'doc8',
+  'flake8',
+  'flake8-docstrings',
+  'flake8-import-order',
+  'hacking',
+  'pycodestyle',
+  'pylint',
+  'Pygments',
+  'reno',
+  'virtualenv',
+  'yamllint',
+]
+CPYTHON3 = '/usr/share/dh-python/dist/cpython3_fallback'
+REQ_FILES = [
+  'requirements.txt',
+  'test-requirements.txt',
+  'driver-requirements.txt', # ironic uses this
+  os.path.join('doc', 'requirements.txt'),
+]
+INDENT = None
+TMP_DIR = tempfile.mkdtemp()
 
-indent = None
-tmp_dir = tempfile.mkdtemp()
 packages = []
 build_depends_packages = []
 depends_packages = []
@@ -34,7 +51,7 @@ def get_ubuntu_package_name(upstream_name):
     If Ubuntu package name is not found, returns 'ENOTFOUND'.
     '''
     pkg_name = 'ENOTFOUND'
-    cpython_file = cpython3
+    cpython_file = CPYTHON3
 
     try:
         with open(cpython_file, 'r') as cpython_fp:
@@ -54,8 +71,8 @@ def get_ubuntu_package_name(upstream_name):
 
     if pkg_name == 'ENOTFOUND':
         python_version = 'python3'
-        log.warning("Could not find {} Ubuntu package name for upstream "
-                    "python package: {}".format(python_version, upstream_name))
+        log.warning(f"Could not find {python_version} Ubuntu package name for "
+                    f"upstream python package: {upstream_name}")
 
     return pkg_name
 
@@ -67,7 +84,7 @@ def rmadison(packages):
     '''
     results = subprocess.run(["rmadison", ' '.join(packages)], check=True,
                              stdout=subprocess.PIPE)
-    rmad_file = os.path.join(tmp_dir, "rmadison.txt")
+    rmad_file = os.path.join(TMP_DIR, "rmadison.txt")
     with open(rmad_file, 'w') as fp_out:
         fp_out.write(results.stdout.decode("utf-8"))
 
@@ -96,30 +113,28 @@ def swap_package_name_and_min_version(line, upstream_name, pkg_name,
     Also keeps a list of Ubuntu package names for later use by rmadison.
     '''
     if pkg_name == "ENOTFOUND":
-        output_line = line.replace(upstream_name,
-                                   "ENOTFOUND({})".format(upstream_name))
+        output_line = line.replace(upstream_name, f"ENOTFOUND({upstream_name})")
         return output_line.rstrip()
 
     if has_min_version:
         try:
             min_version = line.split('>=')[1].split(',')[0].rstrip()
         except IndexError:
-            log.warning("Unable to find min version in line: {}. Will "
-                        "use pinned version as min version in control file."
-                        "".format(line.rstrip()))
+            log.warning(f"Unable to find min version in line: {line.rstrip()}. "
+                        "Using pinned version as min version in control file.")
             try:
                 min_version = line.split('==')[1].split(',')[0].rstrip()
             except IndexError:
-                log.warning("Unable to find pinned version in line: {}. Will "
-                            "not specify version in control file."
-                            "".format(line.rstrip()))
-                output_line = "{}".format(pkg_name)
+                log.warning("Unable to find pinned version in line: "
+                            f"{line.rstrip()}. Will not specify version in "
+                            "control file.")
+                output_line = pkg_name
                 packages.append(pkg_name)
                 return output_line
-        output_line = "{} (>= {})".format(pkg_name, min_version)
+        output_line = f"{pkg_name} (>= {min_version})"
         packages.append(pkg_name)
     else:
-        output_line = "{}".format(pkg_name)
+        output_line = pkg_name
         packages.append(pkg_name)
     return output_line
 
@@ -135,15 +150,15 @@ def process_requirements_files_phase1():
     package list.
     '''
 
-    for req_file in req_files:
-        req_file_out = os.path.join(tmp_dir, '{}.phase1'.format(req_file))
+    for req_file in REQ_FILES:
+        req_file_out = os.path.join(TMP_DIR, f"{req_file}.phase1")
 
         if not os.path.isfile(req_file):
-            log.warning("requirement file not found: {}".format(req_file))
+            log.warning(f"requirement file not found: {req_file}")
             continue
 
         if os.path.dirname(req_file) == 'doc':
-            doc_dir = os.path.join(tmp_dir, 'doc')
+            doc_dir = os.path.join(TMP_DIR, 'doc')
             if not os.path.exists(doc_dir):
                 os.mkdir(doc_dir)
 
@@ -164,9 +179,13 @@ def process_requirements_files_phase1():
                     has_min_version = True
                 except IndexError:
                     log.warning("Version specifier not found in line: "
-                                "{}".format(line.rstrip()))
+                                f"{line.rstrip()}")
                     upstream_name = line.split(' ')[0].rstrip()
                     has_min_version = False
+
+                if upstream_name in IGNORE_PROJECTS:
+                    log.debug(f"Skipping project: {upstream_name}")
+                    continue
 
                 pkg_name_py3 = get_ubuntu_package_name(upstream_name)
                 for pkg_name in [pkg_name_py3]:
@@ -187,11 +206,11 @@ def process_requirements_files_phase2(release):
     The updated requirements files are written to the temp directory as
     (test-)requirements.txt.phase2 and doc/requirements.txt.phase2.
     '''
-    rmad_file = os.path.join(tmp_dir, "rmadison.txt")
+    rmad_file = os.path.join(TMP_DIR, "rmadison.txt")
 
-    for req_f in req_files:
-        req_f_in = os.path.join(tmp_dir, '{}.phase1'.format(req_f))
-        req_f_out = os.path.join(tmp_dir, '{}.phase2'.format(req_f))
+    for req_f in REQ_FILES:
+        req_f_in = os.path.join(TMP_DIR, f"{req_f}.phase1")
+        req_f_out = os.path.join(TMP_DIR, f"{req_f}.phase2")
 
         if not os.path.isfile(req_f):
             continue
@@ -209,13 +228,12 @@ def process_requirements_files_phase2(release):
                         epoch_index = rmad_line.find(':')-1
                         break
                 if epoch_index > 0:
-                    out_line = line.replace("(>= ", "(>= {}:".format(
-                        rmad_line[epoch_index]))
+                    out_line = line.replace(
+                        "(>= ", f"(>= {rmad_line[epoch_index]}:")
                 else:
                     out_line = line
                 if not found and pkg_name != "ENOTFOUND":
-                    log.warning("{} not found for release "
-                                "{}".format(pkg_name, release))
+                    log.warning(f"{pkg_name} not found for release {release}")
                 fp_out.write(out_line)
 
 
@@ -229,13 +247,13 @@ def process_control_file_phase1():
     for depends (from requirements.txt) and the other for build-depends
     (from (test-)requirements.txt and doc/requirements.txt).
     '''
-    global indent
+    global INDENT
 
     control_file = 'debian/control'
-    control_file_out = os.path.join(tmp_dir, 'control.phase1')
-    req_f = os.path.join(tmp_dir, '{}.phase2'.format('requirements.txt'))
-    treq_f = os.path.join(tmp_dir, '{}.phase2'.format('test-requirements.txt'))
-    dreq_f = os.path.join(tmp_dir, 'doc', '{}.phase2'.format('requirements.txt'))
+    control_file_out = os.path.join(TMP_DIR, 'control.phase1')
+    req_f = os.path.join(TMP_DIR, f"requirements.txt.phase2")
+    treq_f = os.path.join(TMP_DIR, f"test-requirements.txt.phase2")
+    dreq_f = os.path.join(TMP_DIR, 'doc', f"requirements.txt.phase2")
 
     with open(control_file, 'r') as fp_in:
         with open(control_file_out, 'w') as fp_out:
@@ -265,7 +283,7 @@ def process_control_file_phase1():
                     # (test-)requirements.txt.phase2 or
                     # doc/requirements.txt.phase2.
                     pkg_name = control_line.split(',')[0].split('(')[0].strip()
-                    indent = control_line.split(pkg_name)[0]
+                    INDENT = control_line.split(pkg_name)[0]
 
                     out_line = find_package_line_in_req_file(req_f, pkg_name)
                     if not out_line:
@@ -279,7 +297,7 @@ def process_control_file_phase1():
                             out_line = find_package_line_in_req_file(dreq_f,
                                                                      pkg_name)
                     if out_line:
-                        fp_out.write(indent + out_line.rstrip() + ',\n')
+                        fp_out.write(INDENT + out_line.rstrip() + ',\n')
                         if (section == 'Build-Depends' or
                                 section == 'Build-Depends-Indep'):
                             build_depends_packages.append(pkg_name)
@@ -301,10 +319,10 @@ def process_control_file_phase2():
     don't already exist in the control file. The updated control file is
     written to the temp directory as control.phase2 and to debian/control.
     '''
-    global indent
+    global INDENT
 
-    control_file_in = os.path.join(tmp_dir, 'control.phase1')
-    control_file_out = os.path.join(tmp_dir, 'control.phase2')
+    control_file_in = os.path.join(TMP_DIR, 'control.phase1')
+    control_file_out = os.path.join(TMP_DIR, 'control.phase2')
 
     with open(control_file_in, 'r') as fp_in:
         with open(control_file_out, 'w') as fp_out:
@@ -322,9 +340,9 @@ def process_control_file_phase2():
 
                 # Write the new deps
                 new_dep_lines = []
-                for req_f in req_files:
+                for req_f in REQ_FILES:
 
-                    r_file = os.path.join(tmp_dir, '{}.phase2'.format(req_f))
+                    r_file = os.path.join(TMP_DIR, f"{req_f}.phase2")
                     if not os.path.isfile(r_file):
                         continue
 
@@ -337,12 +355,12 @@ def process_control_file_phase2():
                                     pkg_name not in build_depends_packages) or
                                 (req_f == os.path.join('doc', 'requirements.txt') and
                                     pkg_name not in build_depends_packages)):
-                                new_dep_lines.append(indent + r_line)
+                                new_dep_lines.append(INDENT + r_line)
 
-                    fp_out.write("*** new {} deps (start)\n".format(req_f))
+                    fp_out.write(f"*** new {req_f} deps (start)\n")
                     for line in sorted(new_dep_lines):
                         fp_out.write(line.rstrip() + ",\n")
-                    fp_out.write("*** new {} deps (end) ***\n".format(req_f))
+                    fp_out.write(f"*** new {req_f} deps (end) ***\n")
 
                 fp_out.write(control_line)
                 processing_new_deps = False
@@ -369,7 +387,7 @@ def main():
 
     ubuntu_codenames = ['xenial', 'bionic', 'focal', 'hirsute', 'impish', 'jammy', 'kinetic', 'lunar']
     if args.release not in ubuntu_codenames:
-        log.error("Ubuntu release code name is not valid: {}".format(args.release))
+        log.error(f"Ubuntu release code name is not valid: {args.release}")
         sys.exit(1)
 
     process_requirements_files_phase1()
@@ -379,10 +397,9 @@ def main():
     process_control_file_phase2()
 
     if loglevel != log.DEBUG:
-        shutil.rmtree(tmp_dir)
+        shutil.rmtree(TMP_DIR)
 
-    log.info("Done! Check the temp directory for debugging: "
-             "{}".format(tmp_dir))
+    log.info(f"Done! Check the temp directory for debugging: {TMP_DIR}")
 
 
 if __name__ == "__main__":
