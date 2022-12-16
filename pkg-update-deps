@@ -15,6 +15,8 @@ import tempfile
 import subprocess
 import sys
 
+import git
+
 
 IGNORE_PROJECTS = [
   'bandit',
@@ -357,10 +359,11 @@ def process_control_file_phase2():
                                     pkg_name not in build_depends_packages)):
                                 new_dep_lines.append(INDENT + r_line)
 
-                    fp_out.write(f"*** new {req_f} deps (start)\n")
-                    for line in sorted(new_dep_lines):
-                        fp_out.write(line.rstrip() + ",\n")
-                    fp_out.write(f"*** new {req_f} deps (end) ***\n")
+                    if new_dep_lines:
+                        fp_out.write(f"*** new {req_f} deps (start)\n")
+                        for line in sorted(new_dep_lines):
+                            fp_out.write(line.rstrip() + ",\n")
+                        fp_out.write(f"*** new {req_f} deps (end) ***\n")
 
                 fp_out.write(control_line)
                 processing_new_deps = False
@@ -395,6 +398,12 @@ def main():
 
     process_control_file_phase1()
     process_control_file_phase2()
+
+    repo = git.Repo(os.getcwd())
+    if repo.git.diff():
+        subprocess.check_call(
+            ["debchange", "d/control: Align (Build-)Depends with upstream."])
+        subprocess.check_call(['debcommit', '--all'])
 
     if loglevel != log.DEBUG:
         shutil.rmtree(TMP_DIR)
