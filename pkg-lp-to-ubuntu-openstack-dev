@@ -29,9 +29,9 @@ quilt pop -a || true
 rm -rf ${orig_dir}/${pkg}/.pc
 rm -rf ${orig_dir}/${pkg}/.git*
 
-git init
+git init -b master
 git add *
-git add */.*
+git add ./.*
 git commit -a -m "Initial import from Launchpad"
 
 git checkout --orphan upstream
