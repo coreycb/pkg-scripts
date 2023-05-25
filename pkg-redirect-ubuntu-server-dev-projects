@@ -4,7 +4,7 @@
 # redirect to lp:~ubuntu-openstack-dev. This is done for several projects.
 # (requires projects file with list of projects, one name per line)
 #
-# Example: pkg-redirect-ubuntu-server-dev-projects ~/src/scripts/pkg-scripts/projects
+# Example: pkg-redirect-ubuntu-server-dev-projects ./projects
 #
 
 import argparse

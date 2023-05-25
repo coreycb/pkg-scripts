@@ -3,7 +3,7 @@
 # Check if stable branch exists
 # (requires projects file with list of projects, one name per line)
 #
-# Example: pkg-check-stable-branches ~/src/scripts/packaging/projects stable/victoria
+# Example: pkg-check-stable-branches ./projects stable/victoria
 #
 
 import argparse

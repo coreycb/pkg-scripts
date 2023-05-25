@@ -3,7 +3,7 @@
 # Push new stable branch to origin
 # (requires projects file with list of projects, one name per line)
 #
-# Example: pkg-push-stable-branches ~/src/scripts/pkg-scripts/projects stable/victoria
+# Example: pkg-push-stable-branches ./projects stable/victoria
 #
 
 import argparse

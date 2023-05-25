@@ -3,8 +3,8 @@
 # Update .launchpad.yaml for several projects
 # (requires projects file with list of projects, one name per line)
 #
-# Example: pkg-update-launchpad-yamls ~/src/scripts/pkg-scripts/projects master bobcat
-# Example: pkg-update-launchpad-yamls ~/src/scripts/pkg-scripts/projects stable/antelope antelope
+# Example: pkg-update-launchpad-yamls ./projects master bobcat
+# Example: pkg-update-launchpad-yamls ./projects stable/antelope antelope
 #
 
 import argparse

@@ -3,7 +3,7 @@
 # Create stable branches for several projects
 # (requires projects file with list of projects, one name per line)
 #
-# Example: pkg-create-stable-branches ~/src/scripts/pkg-scripts/projects stable/victoria
+# Example: pkg-create-stable-branches ./projects stable/victoria
 #
 
 import argparse
