@@ -1,0 +1,36 @@
+#!/bin/bash
+#
+# Update .launchpad.yaml for the specified package.
+#
+# Example: pkg-update-launchpad-yaml cinder master bobcat
+# Example: pkg-update-launchpad-yaml cinder stable/antelope antelope
+#
+
+set -ex
+
+if [ $# -ne 3 ]; then
+    echo "Usage: $0 package-name stable-branch-name openstack-codename"
+    echo "       $0 cinder master bobcat"
+    echo "       $0 cinder stable/antelope antelope"
+    exit
+fi
+
+package_name=$1
+stable_branch=$2
+openstack_codename=$3
+
+if [ ! -d ./cloud-archive-tools ]; then
+    git clone lp:~ubuntu-cloud-archive/+git/cloud-archive-tools
+fi
+
+git clone lp:~ubuntu-openstack-dev/ubuntu/+source/${package_name} || true
+cd ${package_name}
+
+git checkout ${stable_branch}
+cp ../cloud-archive-tools/cloud_global/${openstack_codename}/.launchpad.yaml .
+git add .launchpad.yaml
+
+dch -n ".launchpad.yaml: Sync from cloud-archive-tools for ${openstack_codename}."
+sed -i "/  \* Non-maintainer upload./d" "debian/changelog"
+
+debcommit -a

@@ -1,0 +1,31 @@
+#!/usr/bin/env python3
+#
+# Update .launchpad.yaml for several projects
+# (requires projects file with list of projects, one name per line)
+#
+# Example: pkg-update-launchpad-yamls ~/src/scripts/pkg-scripts/projects master bobcat
+# Example: pkg-update-launchpad-yamls ~/src/scripts/pkg-scripts/projects stable/antelope antelope
+#
+
+import argparse
+import subprocess
+
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("projects", help="Path to projects file")
+    parser.add_argument("branch", help="Stable branch name to create")
+    parser.add_argument("codename", help="OpenStack release codename")
+    args = parser.parse_args()
+
+    with open(args.projects, "r") as f:
+        for line in f.readlines():
+            project = line.rstrip()
+            cmd = ['pkg-update-launchpad-yaml', project, args.branch,
+                   args.codename]
+            try:
+                subprocess.check_call(cmd)
+            except subprocess.CalledProcessError:
+                continue
+
+if __name__ == "__main__":
+    main()
