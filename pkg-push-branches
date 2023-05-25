@@ -3,7 +3,7 @@
 # Push new stable branch to origin
 # (requires projects file with list of projects, one name per line)
 #
-# Example: pkg-push-stable-branches ./projects stable/victoria
+# Example: pkg-push-branches ./projects stable/victoria
 #
 
 import argparse
@@ -13,7 +13,7 @@ import subprocess
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("projects", help="Path to projects file")
-    parser.add_argument("branch", help="Stable branch name to push")
+    parser.add_argument("branch", help="Branch name to push")
     args = parser.parse_args()
 
     with open(args.projects, "r") as f:
