@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 #
-# Update .launchpad.yaml for several projects
-# (requires projects file with list of projects, one name per line)
+# Update common files such as d/gbp.conf and .launchpad.yaml for several
+# projects (requires projects file with list of projects, one name per line).
 #
-# Example: pkg-update-launchpad-yamls ./projects master bobcat
-# Example: pkg-update-launchpad-yamls ./projects stable/antelope antelope
+# Example: pkg-sync-common-files-all ./projects master bobcat
+# Example: pkg-sync-common-files-all ./projects stable/antelope antelope
 #
 
 import argparse
@@ -20,7 +20,7 @@ def main():
     with open(args.projects, "r") as f:
         for line in f.readlines():
             project = line.rstrip()
-            cmd = ['pkg-update-launchpad-yaml', project, args.branch,
+            cmd = ['pkg-sync-common-files', project, args.branch,
                    args.codename]
             try:
                 subprocess.check_call(cmd)

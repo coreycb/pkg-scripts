@@ -1,9 +1,10 @@
 #!/bin/bash
 #
-# Update .launchpad.yaml for the specified package.
+# Update common files such as .launchpad.yaml and gbp.conf for the
+# specified package.
 #
-# Example: pkg-update-launchpad-yaml cinder master bobcat
-# Example: pkg-update-launchpad-yaml cinder stable/antelope antelope
+# Example: pkg-sync-common-files cinder master bobcat
+# Example: pkg-sync-common-files cinder stable/antelope antelope
 #
 
 set -ex
@@ -21,6 +22,10 @@ openstack_codename=$3
 
 if [ ! -d ./cloud-archive-tools ]; then
     git clone lp:~ubuntu-cloud-archive/+git/cloud-archive-tools
+else
+    cd cloud-archive-tools
+    git pull
+    cd -
 fi
 
 git clone lp:~ubuntu-openstack-dev/ubuntu/+source/${package_name} || true
@@ -29,8 +34,10 @@ cd ${package_name}
 git checkout ${stable_branch}
 cp ../cloud-archive-tools/cloud_global/${openstack_codename}/.launchpad.yaml .
 git add .launchpad.yaml
+cp ../cloud-archive-tools/cloud_global/${openstack_codename}/gbp.conf ./debian/
+git add ./debian/gbp.conf
 
-dch -n ".launchpad.yaml: Sync from cloud-archive-tools for ${openstack_codename}."
+dch -n "d/gbp.conf, .launchpad.yaml: Sync from cloud-archive-tools for ${openstack_codename}."
 sed -i "/  \* Non-maintainer upload./d" "debian/changelog"
 
 debcommit -a
