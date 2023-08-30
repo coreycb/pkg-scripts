@@ -31,7 +31,7 @@ rm -rf ${orig_dir}/${pkg}/.git*
 
 git init
 git add *
-git add */.*
+find ${orig_dir}/${pkg}/ -maxdepth 1 -name '.*' ! -name '.' -exec git add {} +
 git commit -a -m "Initial import from Launchpad"
 
 git checkout --orphan upstream
