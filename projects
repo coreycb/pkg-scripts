@@ -42,7 +42,6 @@ nova
 octavia
 octavia-dashboard
 openstack-trove
-oslo-sphinx
 ovn-octavia-provider
 panko
 placement
