@@ -3,8 +3,8 @@
 # Update common files such as d/gbp.conf and .launchpad.yaml for several
 # projects (requires projects file with list of projects, one name per line).
 #
-# Example: pkg-sync-common-files-all ./projects master bobcat
-# Example: pkg-sync-common-files-all ./projects stable/antelope antelope
+# Example: pkg-sync-common-files-all ./projects master caracal
+# Example: pkg-sync-common-files-all ./projects stable/2023.2 bobcat
 #
 
 import argparse
