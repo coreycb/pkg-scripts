@@ -54,7 +54,6 @@ python-ceilometerclient
 python-ceilometermiddleware
 python-cinderclient
 python-cliff
-python-congressclient
 python-cursive
 python-designateclient
 python-diskimage-builder
